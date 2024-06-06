@@ -46,10 +46,8 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: 🔥 publishing plugin
-        working-directory: conventions  # 进入目标目录
         run: |
-          cat settings.gradle.kts
-
+          ./gradlew :conventions:publishPlugins
 
 #      - name: Create key=value to local.properties
 #        run: |
