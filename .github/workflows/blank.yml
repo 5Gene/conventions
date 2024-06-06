@@ -47,6 +47,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: 🔥 publishing plugin
         run: |
+          chmod +x gradlew
           ./gradlew :conventions:publishPlugins
 
 #      - name: Create key=value to local.properties
