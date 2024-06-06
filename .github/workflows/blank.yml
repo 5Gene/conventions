@@ -28,12 +28,12 @@ jobs:
 
       - name: 🐼 Set up JDK 18
         uses: actions/setup-java@v3
-        with:
-          java-version: '18'
 
 
       - name: 🔪 Create key=value to gradle.properties
         run: |
+          echo 🔪 Create key=value to gradle.properties
+          echo java --version
           echo "gradle.publish.key=${{ secrets.GRADLE_KEY }}" > gradle.properties
           echo "gradle.publish.secret=${{ secrets.GRADLE_SECRET }}" > gradle.properties
           echo "mavenCentralUsername=${{ secrets.MAVEN_NAME }}" > gradle.properties
