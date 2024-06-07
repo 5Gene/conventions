@@ -95,6 +95,20 @@ class KnifeClassMethodVisitor(
     }
 
 
+    private fun doEmptyMethodVisitor(
+        isInit: Boolean,
+        access: Int,
+        apiVersion: Int,
+        name: String,
+        descriptor: String,
+        visitMethod: MethodVisitor,
+    ) = if (isInit) {
+        EmptyInitFunctionVisitor(apiVersion, name, descriptor, visitMethod)
+    } else {
+        EmptyMethodVisitor(apiVersion, access, name, descriptor, visitMethod)
+    }
+
+
     /**
      * 访问类的方法。如果方法匹配目标方法，则返回一个自定义的 MethodVisitor 来修改它。
      *
@@ -128,6 +142,7 @@ class KnifeClassMethodVisitor(
         signature: String?,
         exceptions: Array<out String>?
     ): MethodVisitor? {
+        val isInit = name == "<init>" || name == "<clinit>"
         val visitMethod = super.visitMethod(access, name, descriptor, signature, exceptions)
 
         val wildcard = methodConfigs["*"]
@@ -139,13 +154,15 @@ class KnifeClassMethodVisitor(
             if (targetDescriptor == "*") {
                 //目标方法的descriptor规则为通配符，则忽略descriptor匹配，也就是说这个类的所有方法都匹配，全置空
                 asmLog(msg = "KnifeClassMethodVisitor >> [$internalClass] > need empty all method[*] -> method=[${name}], descriptor=[${descriptor}], signature=[${signature}], exceptions=[${exceptions}]".red)
-                return EmptyMethodVisitor(apiVersion, name, descriptor, visitMethod)
+                return doEmptyMethodVisitor(isInit, access, apiVersion, name, descriptor, visitMethod)
             } else if (targetDescriptor == descriptor) {
                 //表示匹配这个类下所有签名为descriptor的方法 (参数+返回值)
                 asmLog(msg = "KnifeClassMethodVisitor >> [$internalClass] > need empty method[$descriptor] -> name=[${name}], descriptor=[${descriptor}], signature=[${signature}], exceptions=[${exceptions}]".red)
-                return EmptyMethodVisitor(apiVersion, name, descriptor, visitMethod)
+                return doEmptyMethodVisitor(isInit, access, apiVersion, name, descriptor, visitMethod)
             }
         }
+
+//        val exclude = methodConfigs.filter { it.key.startsWith("-") }
 
         val modifyConfigs = methodConfigs[name] ?: return visitMethod
         val matchedModifyConfigs = modifyConfigs.filter { modifyConfig ->
@@ -165,7 +182,7 @@ class KnifeClassMethodVisitor(
         if (emptyMethodConfig != null) {
             //方法置空的话 后面就不需要处理了，后面都是方法内部的处理
             asmLog(msg = "KnifeClassMethodVisitor >> [$internalClass] > need empty $emptyMethodConfig".green)
-            return EmptyMethodVisitor(apiVersion, name, descriptor, visitMethod)
+            return doEmptyMethodVisitor(isInit, access, apiVersion, name, descriptor, visitMethod)
         }
 
         //不是置空这个方法

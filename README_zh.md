@@ -117,7 +117,7 @@ knife {
                     // 2 移除方法的调用：
                     // "com.osp.app.MainActivity#onCreate#*=>*#testRemove#*"
                     // 移除 类MainActivity方法onCreate里面调用的testRemove()
-                    // 3 修改方法的调用：
+                    // 3 修改方法的调用：这里必须注意，如果替换的是对象的调用，静态方法必须第一个参数是那个对象 
                     // "com.osp.app.MainActivity#testChange#?=>java/io/PrintStream#println#*->hello/change"
                     // 修改 类MainActivity方法testChange里面调用的System.out.println()修改为静态调用hello.change.println()
                     configs(

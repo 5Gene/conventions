@@ -80,6 +80,22 @@ internal fun String.toModifyConfig(): ModifyConfig {
     return ModifyConfig(targetMethod, MethodAction(oldInnerMethodStr.toMethodData(), toClz.replace(".", "/")))
 }
 
+internal class EmptyInitFunctionVisitor(
+    apiVersion: Int,
+    private val classMethod: String,
+    private val methodDesc: String,
+    methodVisitor: MethodVisitor,
+) : MethodVisitor(apiVersion, methodVisitor) {
+    override fun visitMethodInsn(opcode: Int, owner: String?, name: String?, descriptor: String?, isInterface: Boolean) {
+        if (name != "<init>") {
+            visitEnd()
+            return
+        }
+        asmLog(1, "EmptyMethodVisitor >> [$classMethod] > $methodDesc".purple)
+        super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
+    }
+}
+
 
 /**
  * 一个 MethodVisitor，用于将目标方法修改为空方法，并返回适当的默认值。
@@ -90,11 +106,12 @@ internal fun String.toModifyConfig(): ModifyConfig {
  */
 internal class EmptyMethodVisitor(
     apiVersion: Int,
+    private val access: Int,
     private val classMethod: String,
     private val methodDesc: String,
-    methodVisitor: MethodVisitor,
-) : MethodVisitor(apiVersion, methodVisitor) {
-
+    private val methodVisitor: MethodVisitor,
+) : MethodVisitor(apiVersion) {
+    private val isStaticMethod: Boolean = (access and Opcodes.ACC_STATIC) != 0
     /**
      * 访问方法的代码开始处。插入指令使方法为空方法。
      */
@@ -102,46 +119,92 @@ internal class EmptyMethodVisitor(
         super.visitCode()
         // 根据方法的返回类型插入相应的返回指令
         asmLog(1, "EmptyMethodVisitor >> [$classMethod] > $methodDesc".purple)
+
+        //方法的局部变量表 (maxLocals)
+        //局部变量表用于存储方法的参数和局部变量。在实例方法中，第一个局部变量索引是 this 引用。
+        // 方法参数按顺序排列，每个参数占用一个索引，除非是 long 或 double 类型，它们占用两个索引。
+        //计算 maxLocals:
+        //  实例方法的 this 引用:
+        //  - 占用索引 0。
+        //方法参数:
+        //  - 每个参数占用一个索引，除非是 long 或 double 类型，它们占用两个索引。
+        //局部变量:
+        //  - 方法体内声明的局部变量。
+
+        //静态方法不需要加载this
+        var maxLocals: Int = if (isStaticMethod) 0 else 1
+        val arguments = Type.getArgumentTypes(methodDesc)
+        arguments.forEach {
+            if (it == Type.DOUBLE_TYPE || it == Type.LONG_TYPE) {
+                //long 或 double 类型，它们占用两个索引。
+                maxLocals += 2
+            } else {
+                maxLocals += 1
+            }
+        }
+
+        //方法的操作数栈 (maxStack)
+        //操作数栈用于执行字节码指令时的中间结果。计算 maxStack 的关键是跟踪每条字节码指令对栈的影响（入栈和出栈操作），
+        // 并找出操作数栈在方法执行过程中达到的最大深度。
+        //计算 maxStack:
+        //  - 分析方法体的字节码，跟踪每条指令对栈的影响（入栈和出栈操作）。
+        //  - 找出操作数栈在执行过程中达到的最大深度。
+        //常量加载指令（如 iconst_0、ldc）会将常量压入栈中，增加栈深度。
+        //返回指令（如 ireturn、dreturn）会弹出栈顶元素，并在返回后栈深度变为 0。
+        //方法调用前需要确保栈有足够的空间来存储参数和返回值。
+        val maxStack: Int
         when (Type.getReturnType(methodDesc).sort) {
             Type.VOID -> {
                 // 如果返回类型是 void，插入 RETURN 指令
-                mv.visitInsn(Opcodes.RETURN)
+                methodVisitor.visitInsn(Opcodes.RETURN)
+                maxStack = 0
             }
 
             Type.BOOLEAN, Type.CHAR, Type.BYTE, Type.SHORT, Type.INT -> {
                 // 对于 boolean、char、byte、short 和 int 类型，插入 ICONST_0 和 IRETURN 指令
-                mv.visitInsn(Opcodes.ICONST_0)
-                mv.visitInsn(Opcodes.IRETURN)
+                methodVisitor.visitInsn(Opcodes.ICONST_0)
+                methodVisitor.visitInsn(Opcodes.IRETURN)
+                maxStack = 1
             }
 
             Type.FLOAT -> {
                 // 对于 float 类型，插入 FCONST_0 和 FRETURN 指令
-                mv.visitInsn(Opcodes.FCONST_0)
-                mv.visitInsn(Opcodes.FRETURN)
+                methodVisitor.visitInsn(Opcodes.FCONST_0)
+                methodVisitor.visitInsn(Opcodes.FRETURN)
+                maxStack = 1
             }
 
             Type.LONG -> {
                 // 对于 long 类型，插入 LCONST_0 和 LRETURN 指令
-                mv.visitInsn(Opcodes.LCONST_0)
-                mv.visitInsn(Opcodes.LRETURN)
+                methodVisitor.visitInsn(Opcodes.LCONST_0)
+                methodVisitor.visitInsn(Opcodes.LRETURN)
+                maxStack = 2
             }
 
             Type.DOUBLE -> {
                 // 对于 double 类型，插入 DCONST_0 和 DRETURN 指令
-                mv.visitInsn(Opcodes.DCONST_0)
-                mv.visitInsn(Opcodes.DRETURN)
+                methodVisitor.visitInsn(Opcodes.DCONST_0)
+                methodVisitor.visitInsn(Opcodes.DRETURN)
+                maxStack = 2
             }
 
             Type.ARRAY, Type.OBJECT -> {
                 //Ljava/lang/String;返回值为String
                 if (methodDesc.endsWith("lang/String;")) {
                     // 加载空字符串常量到操作数栈
-                    mv.visitLdcInsn("")
+                    methodVisitor.visitLdcInsn("def from knife plugin")
+                } else if (methodDesc.endsWith("java/util/List;")) {
+                    //返回空list列表
+                    methodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, "kotlin/collections/CollectionsKt", "emptyList", "()Ljava/util/List;", false)
+                } else if (methodDesc.endsWith("java/util/Map;")) {
+                    //返回空map集合
+                    methodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, "kotlin/collections/MapsKt", "emptyMap", "()Ljava/util/Map;", false)
                 } else {
                     // 对于数组和对象类型，插入 ACONST_NULL 和 ARETURN 指令
-                    mv.visitInsn(Opcodes.ACONST_NULL)
+                    methodVisitor.visitInsn(Opcodes.ACONST_NULL)
                 }
-                mv.visitInsn(Opcodes.ARETURN)
+                methodVisitor.visitInsn(Opcodes.ARETURN)
+                maxStack = 1
             }
 
             else -> throw IllegalArgumentException("不支持的返回类型:$methodDesc")
@@ -149,16 +212,18 @@ internal class EmptyMethodVisitor(
 
         // 计算并设置最大堆栈大小和局部变量表的大小
         // 因为方法中可能有返回值的指令，所以需要合理设置堆栈和局部变量的大小
-        mv.visitMaxs(1, 1)
+        methodVisitor.visitMaxs(maxStack, maxLocals)
 
         // 标识方法访问的结束
         // 标识方法访问的结束。这个调用是必要的，以完成对方法的访问。如果没有这个调用，方法的定义将不完整，从而导致生成的字节码不正确。
-        mv.visitEnd()
+        methodVisitor.visitEnd()
     }
 
 }
 
-
+/**
+ * 移除方法中 调用的某行方法
+ */
 internal class RemoveInvokeMethodVisitor(
     private val classMethod: String,
     private val methodActions: List<MethodAction>,
@@ -180,10 +245,7 @@ internal class RemoveInvokeMethodVisitor(
         } else {
             //移除的是方法里面调用的其他方法
             //不执行【super.visitMethodInsn()】那么就是移除方法的调用
-            asmLog(
-                1,
-                "RemoveInvokeMethodVisitor >> owner=[${owner}], name=[${name}], descriptor=[${descriptor}], in [$classMethod]".purple
-            )
+            asmLog(1, "RemoveInvokeMethodVisitor >> owner=[${owner}], name=[${name}], descriptor=[${descriptor}], in [$classMethod]".purple)
         }
     }
 }
@@ -219,7 +281,7 @@ internal class ChangeInvokeOwnerMethodVisitor(
         opcode: Int,
         owner: String,
         name: String?,
-        descriptor: String?,
+        descriptor: String,
         isInterface: Boolean
     ) {
         val methodAction = methodActions.find(owner, name, descriptor)
@@ -227,10 +289,21 @@ internal class ChangeInvokeOwnerMethodVisitor(
             //没匹配到就不需要处理
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
         } else {
-            asmLog(
-                1,
-                "ChangeInvokeOwnerMethodVisitor >> owner=[${owner}], name=[${name}], descriptor=[${descriptor}], to [${methodAction.toNewClass}], in [$classMethod]".purple
-            )
+            asmLog(1, "ChangeInvokeOwnerMethodVisitor >> owner=[${owner}], name=[${name}], descriptor=[${descriptor}], to [${methodAction.toNewClass}]".purple)
+            if (opcode == Opcodes.INVOKEVIRTUAL) {
+                // 针对 对象.方法()的调用。把此对象当第一个参数传入
+                // 如果替换的是对象的调用，静态方法必须第一个参数是对象
+                //visitLdcInsn("str") // 加载字符串参数
+                val newDescriptor = "(L${owner};${descriptor.substring(1)}"
+                super.visitMethodInsn(
+                    Opcodes.INVOKESTATIC,
+                    methodAction.toNewClass,
+                    name,
+                    newDescriptor,
+                    isInterface
+                )
+                return
+            }
             // 替换为新的类的静态方法调用
             super.visitMethodInsn(
                 Opcodes.INVOKESTATIC,
