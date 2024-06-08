@@ -30,5 +30,5 @@ jobs:
       - name: 📸 Upload APK
         uses: actions/upload-artifact@v2
         with:
-          name: release-apk
+          name: demo-apk
           path: app/build/outputs/apk/debug/app-debug.apk
