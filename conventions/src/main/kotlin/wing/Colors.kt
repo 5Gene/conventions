@@ -1,6 +1,6 @@
 package wing
 
-//🎉 📣 🎗️ 🔥 📜 💯 📸 🎲 🚀 💡 🔔 ☃️ ✨
+//🎉 📣 🎗️ 🔥 📜 💯 📸 🎲 🚀 💡 🔔 ☃️ ✨ 🔪
 
 //以下是20种常见的颜色以及它们的 ANSI 转义码：
 
@@ -30,6 +30,8 @@ val String.red: String
 
 val String.lightRed: String
     get() = "\u001B[31m${this}\u001B[0m"
+val String.darkGreen: String
+    get() = "\u001B[32m${this}\u001B[0m"
 val String.green: String
     get() = "\u001B[92m${this}\u001B[0m"
 val String.yellow: String

@@ -80,11 +80,11 @@ class AGPKnifePlugin : AbsAndroidConfig() {
                     it.value.groupBy { it.targetMethod.methodName }
                 }
                 mapValues.forEach { (key, value) ->
-                    project.log("knife > tryAsmTransform:${variant.name} 👇👇👇👇👇 $key 👇👇👇👇👇".red)
+                    project.log("knife > tryAsmTransform:${variant.name} 👇👇👇👇👇👇👇👇👇👇 $key 👇👇👇👇👇👇👇👇👇👇".red)
                     value.forEach { t, u ->
                         project.log("knife > tryAsmTransform:${variant.name}       $t > ${u.map { it.methodAction ?: "EmptyMethod" }}".red)
                     }
-                    project.log("knife > tryAsmTransform:${variant.name} 👆👆👆👆👆 $key 👆👆👆👆👆 ".red)
+                    project.log("knife > tryAsmTransform:${variant.name} 👆👆👆👆👆👆👆👆👆👆 $key 👆👆👆👆👆👆👆👆👆👆 ".red)
                 }
                 params.methodConfigs.set(mapValues)
                 val modifyClasses = modifyConfigs.map { it.targetMethod.fullClass }.toSet()

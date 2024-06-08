@@ -9,7 +9,7 @@ plugins {
 }
 
 fun String.print() {
-    println("\u001B[93m🔔 $name >> ${this}\u001B[0m")
+    println("\u001B[93m✨ $name >> ${this}\u001B[0m")
 }
 
 fun sysprop(name: String, def: String): String {

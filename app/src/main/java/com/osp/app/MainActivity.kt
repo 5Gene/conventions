@@ -30,11 +30,12 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        val removeAllMethod = EmptyAllMethod()
+        println("xxxxxxxx")
         testRemove(1)
         testEmpty(10)
         testChange(9)
 
-        val removeAllMethod = RemoveAllMethod
         removeAllMethod.method2("90")
 
         println(testEmptyList(10))

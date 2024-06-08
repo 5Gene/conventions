@@ -18,7 +18,7 @@ object Hello {
     }
 
     @JvmStatic
-    fun method2(owner: RemoveAllMethod?, string: String) {
+    fun method2(owner: EmptyAllMethod?, string: String) {
         Log.w("w", owner?.toString() ?: "null")
         owner?.method2("被我改了")
         System.out.println("RemoveAllMethod $owner $string -> Hello")

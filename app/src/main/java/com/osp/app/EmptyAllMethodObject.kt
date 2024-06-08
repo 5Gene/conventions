@@ -1,6 +1,12 @@
 package com.osp.app
 
-object RemoveAllMethod {
+object EmptyAllMethodObject {
+    init {
+        println("000000000000")
+        println("000000000000")
+        println("000000000000")
+    }
+
     fun method1() {
         println("method1")
     }
@@ -33,14 +39,13 @@ object RemoveAllMethod {
         return null
     }
 
-    fun methoObj(aa: Int, ll: List<String>): Any {
+    fun methoObj(ll: List<String>, aa: Int): Any {
         println(method3())
         method1()
         return 1
     }
 
-    @JvmStatic
-    fun methoSta(aa: Int, bb: String, d: Double): Any {
+    fun methoSta(d: Double, aa: Int, bb: String): Any {
         println(method3())
         method1()
         return 1

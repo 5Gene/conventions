@@ -11,8 +11,10 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
+import org.objectweb.asm.Opcodes
 import wing.green
-import wing.red
+import wing.lookDown
+import wing.lookup
 
 abstract class SurgeryInstrumentationParameters : InstrumentationParameters {
 
@@ -91,6 +93,7 @@ class KnifeClassMethodVisitor(
         interfaces: Array<out String>?
     ) {
         internalClass = name
+        asmLog(0, "KnifeClassMethodVisitor >> ${internalClass.lookDown} ")
         super.visit(version, access, name, signature, superName, interfaces)
     }
 
@@ -142,8 +145,14 @@ class KnifeClassMethodVisitor(
         signature: String?,
         exceptions: Array<out String>?
     ): MethodVisitor? {
-        val isInit = name == "<init>" || name == "<clinit>"
         val visitMethod = super.visitMethod(access, name, descriptor, signature, exceptions)
+        if (access and Opcodes.ACC_ABSTRACT != 0) {
+            //抽象方法不处理
+            return visitMethod
+        }
+
+        val isInit = name == "<init>" || name == "<clinit>"
+        val fullMethodName = "$internalClass#$name"
 
         val wildcard = methodConfigs["*"]
         if (wildcard != null) {
@@ -153,15 +162,15 @@ class KnifeClassMethodVisitor(
             val targetDescriptor = modifyConfig.targetMethod.descriptor
             if (targetDescriptor == "*") {
                 //目标方法的descriptor规则为通配符，则忽略descriptor匹配，也就是说这个类的所有方法都匹配，全置空
-                asmLog(msg = "KnifeClassMethodVisitor >> [$internalClass] > need empty all method[*] -> method=[${name}], descriptor=[${descriptor}], signature=[${signature}], exceptions=[${exceptions}]".red)
-                return doEmptyMethodVisitor(isInit, access, apiVersion, name, descriptor, visitMethod)
+                asmLog(msg = "KnifeClassMethodVisitor >> need empty all method[*] -> in [$internalClass]: method=[${name}], descriptor=[${descriptor}], signature=[${signature}], exceptions=[${exceptions}]".green)
+                return doEmptyMethodVisitor(isInit, access, apiVersion, fullMethodName, descriptor, visitMethod)
             } else if (targetDescriptor == descriptor) {
                 //表示匹配这个类下所有签名为descriptor的方法 (参数+返回值)
-                asmLog(msg = "KnifeClassMethodVisitor >> [$internalClass] > need empty method[$descriptor] -> name=[${name}], descriptor=[${descriptor}], signature=[${signature}], exceptions=[${exceptions}]".red)
-                return doEmptyMethodVisitor(isInit, access, apiVersion, name, descriptor, visitMethod)
+                asmLog(msg = "KnifeClassMethodVisitor >> need empty -> in [$internalClass]: method[${name}], descriptor=[${descriptor}], signature=[${signature}], exceptions=[${exceptions}]".green)
+                return doEmptyMethodVisitor(isInit, access, apiVersion, fullMethodName, descriptor, visitMethod)
             }
         }
-
+//        指定方法不处理，其他都处理，以后再做
 //        val exclude = methodConfigs.filter { it.key.startsWith("-") }
 
         val modifyConfigs = methodConfigs[name] ?: return visitMethod
@@ -173,16 +182,14 @@ class KnifeClassMethodVisitor(
             return visitMethod
         }
 
-        val fullMethodName = "$internalClass#$name"
-        asmLog(msg = "KnifeClassMethodVisitor >> [$internalClass] > need modify -> method=[${name}], descriptor=[${descriptor}], signature=[${signature}], exceptions=[${exceptions}]".red)
         //方法置空处理
         val emptyMethodConfig = matchedModifyConfigs.find {
             it.methodAction == null
         }
         if (emptyMethodConfig != null) {
             //方法置空的话 后面就不需要处理了，后面都是方法内部的处理
-            asmLog(msg = "KnifeClassMethodVisitor >> [$internalClass] > need empty $emptyMethodConfig".green)
-            return doEmptyMethodVisitor(isInit, access, apiVersion, name, descriptor, visitMethod)
+            asmLog(msg = "KnifeClassMethodVisitor >> need empty -> in [$internalClass]: method=[${name}], descriptor=[${descriptor}] ->$emptyMethodConfig".green)
+            return doEmptyMethodVisitor(isInit, access, apiVersion, fullMethodName, descriptor, visitMethod)
         }
 
         //不是置空这个方法
@@ -203,7 +210,7 @@ class KnifeClassMethodVisitor(
             }
 
             //这个方法内部的处理：只要移除某行调用
-            asmLog(msg = "KnifeClassMethodVisitor >> [$internalClass] > need remove $removeInvokeMethodActions".green)
+            asmLog(msg = "KnifeClassMethodVisitor >> need remove -> in [$internalClass]: method=[${name}], descriptor=[${descriptor}] -> $removeInvokeMethodActions".green)
             return RemoveInvokeMethodVisitor(
                 fullMethodName,
                 removeInvokeMethodActions,
@@ -212,7 +219,7 @@ class KnifeClassMethodVisitor(
             )
         }
 
-        asmLog(msg = "KnifeClassMethodVisitor >> [$internalClass] > need change $changeInvokeMethodActions".green)
+        asmLog(msg = "KnifeClassMethodVisitor >> need change -> in [$internalClass]: method=[${name}], descriptor=[${descriptor}] -> $changeInvokeMethodActions".green)
 
         val changeInvokeOwnerMethodVisitor = ChangeInvokeOwnerMethodVisitor(
             fullMethodName,
@@ -231,12 +238,17 @@ class KnifeClassMethodVisitor(
         }
 
         //这个方法内部的处理：既要修改调用方也要移除某行调用
-        asmLog(msg = "KnifeClassMethodVisitor >> [$internalClass] > need remove $removeInvokeMethodActions".green)
+        asmLog(msg = "KnifeClassMethodVisitor >> need remove -> in [$internalClass]: method=[${name}], descriptor=[${descriptor}] -> $removeInvokeMethodActions".green)
         return RemoveInvokeMethodVisitor(
             fullMethodName,
             removeInvokeMethodActions,
             apiVersion,
             changeInvokeOwnerMethodVisitor
         )
+    }
+
+    override fun visitEnd() {
+        super.visitEnd()
+        asmLog(0, "KnifeClassMethodVisitor >> ${internalClass.lookup} ")
     }
 }

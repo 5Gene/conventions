@@ -43,10 +43,10 @@ import kotlin.reflect.KProperty
 
 
 fun Project.log(msg: String) {
-    //🎉 📣 🎗️ 🔥 📜 💯 📸 🎲 🚀 💡  🔔 🔪 🐼
+    //🎉 📣 🎗️ 🔥 📜 💯 📸 🎲 🚀 💡 🔔 🔪 🐼 ✨
 
     //    println("🎗️ $name >>> $msg".yellow)
-    println("💡 $name--> tid:${Thread.currentThread().id} $msg".yellow)
+    println("🔪 $name--> tid:${Thread.currentThread().id} $msg".yellow)
 }
 
 internal val Project.vlibs
@@ -234,3 +234,9 @@ fun Project.publish5hmlA(libDescription: String, component: String = "release") 
         }
     }
 }
+
+val String.lookDown: String
+    get() = "👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇 $this 👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇"
+
+val String.lookup: String
+    get() = "👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆 $this 👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆"
