@@ -180,6 +180,21 @@ internal class EmptyMethodVisitor(
         //局部变量:
         //  - 方法体内声明的局部变量。
 
+        // 如果添加日志的话 MAXSTACK 要➕2
+        //methodVisitor.addLogCode("knife", classMethod)
+
+        //ASTORE 2
+        //作用： 将操作数栈顶的值弹出，并将其存储到局部变量表索引为 2 的位置。
+        //区别：
+        //存储的是一个引用类型的值（对象、数组）。
+        //局部变量表索引 2 必须已经声明为一个可以存储该引用类型的变量。
+        //ALOAD 1
+        //作用： 将局部变量表索引为 1 的引用类型值加载到操作数栈顶。
+        //区别：
+        //加载的是一个引用类型的值。
+        //局部变量表索引 1 必须已经存储了一个引用类型的值。
+        //方法内加载变量需要增加 maxLocals
+
         //静态方法不需要加载this
         var maxLocals: Int = if (isStaticMethod) 0 else 1
         val arguments = Type.getArgumentTypes(methodDesc)

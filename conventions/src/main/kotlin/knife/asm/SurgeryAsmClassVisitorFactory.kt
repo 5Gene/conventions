@@ -11,7 +11,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
-import org.objectweb.asm.Opcodes
 import wing.green
 import wing.lookDown
 import wing.lookup
@@ -44,10 +43,6 @@ abstract class SurgeryAsmClassVisitorFactory :
 //    gradle会自动生成实现
 //    override val parameters: Property<SurgeryInstrumentationParameters>
 //        get() =
-
-    //ThreadLocal不能序列化，会报错
-//    @Internal
-//    val findModifyMethods: ThreadLocal<Map<String, List<ModifyConfig>>> = ThreadLocal<Map<String, List<ModifyConfig>>>()
 
     /**
      * isInstrumentable 返回true之后才执行，且在同线程
@@ -146,7 +141,7 @@ class KnifeClassMethodVisitor(
         exceptions: Array<out String>?
     ): MethodVisitor? {
         val visitMethod = super.visitMethod(access, name, descriptor, signature, exceptions)
-        if (access and Opcodes.ACC_ABSTRACT != 0) {
+        if (access.isMethodIgnore()) {
             //抽象方法不处理
             return visitMethod
         }
