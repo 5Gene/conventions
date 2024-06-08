@@ -65,7 +65,7 @@ jobs:
           artifacts: "app/build/outputs/apk/debug/*.apk"
           allowUpdates: true
           token: ${{ secrets.dev_secret }}
-      - run: echo "✨ ⭐ 🌟  The job finish release succeed. > ${{startsWith(github.ref, 'refs/tags/')}
+      - run: echo "✨ ⭐ 🌟  The job finish release succeed. > ${{startsWith(github.ref, 'refs/tags/')}} 🚀"
 
 #      - name: Create key=value to local.properties
 #        run: |
