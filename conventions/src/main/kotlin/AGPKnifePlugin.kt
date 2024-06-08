@@ -69,6 +69,11 @@ class AGPKnifePlugin : AbsAndroidConfig() {
 
             //https://github1s.com/android/gradle-recipes/blob/agp-8.2/asmTransformClasses/build-logic/plugins/src/main/kotlin/CheckAsmTransformationTask.kt
             //https://github1s.com/android/gradle-recipes/blob/agp-8.2/asmTransformClasses/build-logic/plugins/src/main/kotlin/CustomPlugin.kt
+//            variant.instrumentation.setAsmFramesComputationMode(
+//                FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS
+//            )
+            //COPY_FRAMES是默认值
+            //FramesComputationMode.COPY_FRAMES 此Mode修改方法和操作变量后要自己计算
             variant.instrumentation.transformClassesWith(
                 SurgeryAsmClassVisitorFactory::class.java,
                 InstrumentationScope.ALL,

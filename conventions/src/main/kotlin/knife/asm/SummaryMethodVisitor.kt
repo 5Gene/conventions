@@ -6,6 +6,30 @@ import org.objectweb.asm.Handle
 import org.objectweb.asm.Label
 import org.objectweb.asm.MethodVisitor
 
+/**
+ *  ## MethodVisitor 回调方法有：以下非顺序
+ *  - visitCode：开始访问方法代码，此处可以添加方法运行前拦截器
+ *  - visitParameter：访问方法一个参数
+ *  - visitAnnotationDefualt：访问注解接口方法的默认值
+ *  - visitAnnotaion：访问方法的一个注解
+ *  - visitTypeAnnotation：访问方法签名上的一个类型的注解
+ *  - visitAnnotableParameterCount：访问注解参数数量，就是访问方法参数有注解参数个数
+ *  - visitParameterAnnotation：访问参数的注解，返回一个 AnnotationVisitor 可以访问该注解值
+ *  - visitAttribute：访问方法的属性
+ *  - visitFrame：访问方法局部变量的当前状态以及操作栈成员信息
+ *  - visitIntInsn：访问数值类型指令,当 int 取值-1~5采用 ICONST 指令，取值 -128~127 采用 BIPUSH 指令，取值 -32768~32767 采用 SIPUSH 指令，取值 -2147483648~2147483647 采用 ldc 指令。
+ *  - visitVarInsn：访问本地变量类型指令
+ *  - visitTypeInsn：访问类型指令，类型指令会把类的内部名称当成参数 Type
+ *  - visitFieldInsn：域操作指令，用来加载或者存储对象的 Field
+ *  - visitMethodInsn：访问方法操作指令
+ *  - visitDynamicInsn：访问动态类型指令
+ *  - visitJumpInsn：访问比较跳转指令
+ *  - visitLabelInsn：访问 label，当会在调用该方法后访问该label标记一个指令
+ *  - visitLdcInsn：访问 LDC 指令，也就是访问常量池索引
+ *  - visitLineNumber：访问行号描述
+ *  - visitMaxs：访问操作数栈最大值和本地变量表最大值
+ *  - visitLocalVariable：访问本地变量描述
+ */
 class SummaryMethodVisitor(api: Int, methodVisitor: MethodVisitor?) : MethodVisitor(api, methodVisitor) {
 
     override fun visitParameter(name: String?, access: Int) {
