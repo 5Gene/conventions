@@ -7,8 +7,10 @@ viewDsl = "2023.12.08"
 adapter = "2023.10.13"
 spark = "2023.12.08"
 conventions = "2.0.2"
+auto-service = "0.0.1"
 
 [libraries]
+auto-service = { module = "io.github.5hmla:auto-service", version.ref = "auto-service" }
 sparkj-spark = { module = "osp.sparkj.ui:spark", version.ref = "spark" }
 sparkj-cartoon = { module = "osp.sparkj.ui:cartoon", version.ref = "cartoon" }
 sparkj-cubic = { module = "osp.sparkj.ui:cubic", version.ref = "cubic" }
