@@ -6,7 +6,7 @@ cubic = "2023.04.11"
 viewDsl = "2023.12.08"
 adapter = "2023.10.13"
 spark = "2023.12.08"
-conventions = "2.0.1"
+conventions = "2.0.2"
 
 [libraries]
 sparkj-spark = { module = "osp.sparkj.ui:spark", version.ref = "spark" }
