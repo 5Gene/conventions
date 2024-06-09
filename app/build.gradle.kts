@@ -26,6 +26,7 @@ knife {
                         "com.osp.app.MainActivity#testEmpty#*",
                         "com.osp.app.MainActivity#testEmptyList#*",
                         "com.osp.app.MainActivity#onCreate#*=>*#testRemove#*",
+                        "com.osp.app.MainActivity#testTryCatch#*=>TryCatch",
                     )
                 }
                 onArtifactBuilt {

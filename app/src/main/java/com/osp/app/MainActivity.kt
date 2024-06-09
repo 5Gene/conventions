@@ -64,4 +64,10 @@ class MainActivity : AppCompatActivity() {
         println("xxxxxxxxxxxxxx ${num * 2}")
         return null
     }
+
+    fun testTryCatch(num: Int): List<String> {
+        println("xxxxxxxxxxxxxx")
+        println("xxxxxxxxxxxxxx ${num * 2}")
+        return emptyList()
+    }
 }

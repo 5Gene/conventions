@@ -1,4 +1,4 @@
-package knife.asm
+package knife.asm.visitors
 
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Attribute

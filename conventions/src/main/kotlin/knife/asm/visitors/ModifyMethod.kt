@@ -1,147 +1,15 @@
-package knife.asm
+package knife.asm.visitors
 
+import knife.asm.Action
+import knife.asm.asmLog
+import knife.asm.find
+import knife.asm.insertDefReturn
+import knife.asm.necessaryStackAndLocals
 import org.objectweb.asm.Handle
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 import wing.lightRed
 import wing.purple
-import java.io.Serializable
-
-data class MethodData(
-    val fullClass: String,
-    val internalClass: String,
-    val methodName: String,
-    val descriptor: String,
-) : Serializable
-
-sealed class Action(val name: String) : Serializable {
-    /**
-     * ## 删除调用
-     * ### =>`class.method.descriptor`
-     * -  =>`*`.println.*
-     * -  =>java.io.PrintStream#println#*
-     *
-     * 要考虑有返回值的情况，可能后需要用到, 建议使用**【替换】**
-     * ```
-     * fun want_change(){
-     *      val a = A()
-     *      a.method(param)//删除调用
-     *      B.method(param) => toNewClass.method(param)
-     * }
-     * ```
-     *
-     * @param methodData 要移除方法体中具体哪个方法的调用
-     */
-    data class RemoveInvoke(val methodData: MethodData) : Action("RemoveInvoke")
-
-    /**
-     * ## 乾坤大挪移
-     * ### =>`[class|*].[method|*].[descriptor|*]->toNewClass`
-     * -  =>`*`.println.*->com.change.NewClass
-     * -  =>java.io.PrintStream#println#*->com.change.NewClass
-     * ```
-     * fun want_change(){
-     *      val a = A()
-     *      a.method(param) => toNewClass.method(a:A, param)
-     *      B.method(param) => toNewClass.method(param)
-     * }
-     * ```
-     *
-     * @param methodData 方法体中具体哪个方法的调用, 重定向到 toNewClass
-     */
-    data class ChangeInvoke(val methodData: MethodData, val toNewClass: String) : Action("ChangeInvoke")
-
-    object EmptyBody : Action("EmptyBody")
-    object TryCatchBody : Action("TryCatchBody")
-    object TimeConsume : Action("TimeConsume")
-}
-
-data class MethodAction(
-    val methodData: MethodData,
-    val toNewClass: String? = null
-) : Serializable {
-    override fun toString(): String {
-        if (toNewClass == null) {
-            return "RemoveInvoke($methodData)"
-        } else {
-            return "ChangeInvoke($methodData to $toNewClass)"
-        }
-    }
-}
-
-internal fun asmLog(level: Int = 0, msg: String) {
-    println("> ${Thread.currentThread().id} |-${"----".repeat(level)} $msg")
-}
-
-private fun String.isIgnore(): Boolean = this == "*"
-
-private fun String.compareContains(other: String): Boolean = this == other || this.contains(other)
-
-private fun List<MethodAction>.find(owner: String, name: String?, descriptor: String?): MethodAction? = find {
-    val ignoreDescriptor = it.methodData.descriptor.isIgnore()
-    val ignoreInternalClass = it.methodData.internalClass.isIgnore()
-    if (ignoreDescriptor && ignoreInternalClass) {
-        it.methodData.methodName == name
-    } else if (ignoreDescriptor) {
-        it.methodData.methodName == name && owner.compareContains(it.methodData.internalClass)
-    } else if (ignoreInternalClass) {
-        it.methodData.methodName == name && it.methodData.descriptor == descriptor
-    } else {
-        it.methodData.methodName == name && it.methodData.descriptor == descriptor && owner.compareContains(it.methodData.internalClass)
-    }
-}
-
-private fun String.toMethodData(): MethodData {
-    val (clz, method, desc) = this.split("#")
-    return MethodData(clz, clz.replace(".", "/"), method, desc)
-}
-
-private fun String.toMethodAction(): Action {
-    if (this.lowercase() == "trycatch") {
-        return Action.TryCatchBody
-    }
-    if (this.lowercase() == "emptybody") {
-        return Action.EmptyBody
-    }
-    if (this.lowercase() == "timeconsume") {
-        return Action.TimeConsume
-    }
-    if (this.contains("->")) {
-        val (methodStr, toClz) = this.split("->")
-        return Action.ChangeInvoke(methodStr.toMethodData(), toClz.replace(".", "/"))
-    }
-    if (this.contains("#")) {
-        return Action.RemoveInvoke(this.toMethodData())
-    }
-    return Action.EmptyBody
-}
-
-data class ModifyConfig(
-    val targetMethod: MethodData,
-    val methodAction: MethodAction? = null,
-) : Serializable
-
-internal fun String.toModifyConfig(): ModifyConfig {
-    // "target.class#method#(I)V=>PrintStream#println#(I)V->dest/clazz"
-    if (!contains("=>")) {
-        return ModifyConfig(toMethodData())
-    }
-    val (targetMethodStr, methodActionStr) = split("=>")
-    val targetMethod = targetMethodStr.toMethodData()
-
-    if (methodActionStr.isEmpty()) {
-        return ModifyConfig(targetMethod)
-    }
-    // PrintStream#println#(I)V->dest/clazz
-    if (!methodActionStr.contains("->")) {
-        //
-        // PrintStream#println#(I)V
-        return ModifyConfig(targetMethod, MethodAction(methodActionStr.toMethodData()))
-    }
-    // PrintStream#println#(I)V->dest/clazz
-    val (oldInnerMethodStr, toClz) = methodActionStr.split("->")
-    return ModifyConfig(targetMethod, MethodAction(oldInnerMethodStr.toMethodData(), toClz.replace(".", "/")))
-}
 
 //todo ## GeneratorAdapter 好用，封装了很多方法
 
@@ -229,8 +97,6 @@ internal class EmptyMethodVisitor(
      * 访问方法的代码开始处。插入指令使方法为空方法。
      */
     override fun visitCode() {
-        super.visitCode()
-
         var (maxStack, maxLocals) = necessaryStackAndLocals(access, descriptor)
 
         val consume = methodVisitor.insertDefReturn(descriptor)
@@ -258,7 +124,7 @@ internal class EmptyMethodVisitor(
  */
 internal class RemoveInvokeMethodVisitor(
     private val classMethod: String,
-    private val methodActions: List<MethodAction>,
+    private val methodActions: List<Action.RemoveInvoke>,
     apiVersion: Int,
     nextVisitor: MethodVisitor
 ) : MethodVisitor(apiVersion, nextVisitor) {
@@ -291,7 +157,7 @@ internal class RemoveInvokeMethodVisitor(
  */
 internal class ChangeInvokeOwnerMethodVisitor(
     private val classMethod: String,
-    private val methodActions: List<MethodAction>,
+    private val methodActions: List<Action.ChangeInvoke>,
     apiVersion: Int,
     nextVisitor: MethodVisitor
 ) : MethodVisitor(apiVersion, nextVisitor) {
@@ -316,7 +182,7 @@ internal class ChangeInvokeOwnerMethodVisitor(
         descriptor: String,
         isInterface: Boolean
     ) {
-        val methodAction = methodActions.find(owner, name, descriptor)
+        val methodAction: Action.ChangeInvoke? = methodActions.find(owner, name, descriptor)
         if (methodAction == null) {
             //没匹配到就不需要处理
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
@@ -368,3 +234,4 @@ internal class ChangeInvokeOwnerMethodVisitor(
         )
     }
 }
+

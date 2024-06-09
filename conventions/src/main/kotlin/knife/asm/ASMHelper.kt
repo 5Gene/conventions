@@ -229,7 +229,7 @@ fun Int.isReturn(): Boolean {
 }
 
 
-fun Int.isMethodEnd(): Boolean {
+fun Int.isMethodExit(): Boolean {
     return isReturn() || this == Opcodes.ATHROW
 }
 

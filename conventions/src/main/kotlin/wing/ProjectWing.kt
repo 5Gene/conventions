@@ -38,8 +38,6 @@ import java.io.ByteArrayOutputStream
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
 import kotlin.jvm.optionals.getOrNull
-import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
 
 
 fun Project.log(msg: String) {
@@ -157,11 +155,11 @@ fun java.nio.file.Path.isGradleProject(): Boolean = if (!isDirectory()) false el
     it.toString() == "build.gradle.kts"
 }
 
-class ProjectRead(project: Project) : ReadOnlyProperty<Project, String> {
-    override fun getValue(thisRef: Project, property: KProperty<*>): String {
-        return thisRef.properties[property.name]?.toString() ?: System.getenv(property.name)
-    }
-}
+//class ProjectRead(project: Project) : ReadOnlyProperty<Project, String> {
+//    override fun getValue(thisRef: Project, property: KProperty<*>): String {
+//        return thisRef.properties[property.name]?.toString() ?: System.getenv(property.name)
+//    }
+//}
 
 fun Project.gitUrl(): String {
     val stdout = ByteArrayOutputStream()
