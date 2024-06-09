@@ -146,7 +146,7 @@ class KnifeClassMethodVisitor(
             return visitMethod
         }
 
-        val isInit = name == "<init>" || name == "<clinit>"
+        val isInit = name.isInitMethod()
         val fullMethodName = "$internalClass#$name"
 
         val wildcard = methodConfigs["*"]
