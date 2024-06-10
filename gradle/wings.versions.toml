@@ -7,7 +7,8 @@ viewDsl = "2023.12.08"
 adapter = "2023.10.13"
 spark = "2023.12.08"
 conventions = "2.0.2"
-auto-service = "0.0.1"
+auto-service = "0.0.2"
+surery = "2024.06.06"
 
 [libraries]
 auto-service = { module = "io.github.5hmla:auto-service", version.ref = "auto-service" }
