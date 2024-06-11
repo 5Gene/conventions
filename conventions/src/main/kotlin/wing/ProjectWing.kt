@@ -29,12 +29,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.dsl.RepositoryHandler
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.kotlin.dsl.assign
-import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByType
-import java.io.ByteArrayOutputStream
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
 import kotlin.jvm.optionals.getOrNull
@@ -160,78 +155,6 @@ fun java.nio.file.Path.isGradleProject(): Boolean = if (!isDirectory()) false el
 //        return thisRef.properties[property.name]?.toString() ?: System.getenv(property.name)
 //    }
 //}
-
-fun Project.gitUrl(): String {
-    val stdout = ByteArrayOutputStream()
-    exec {
-        commandLine("git", "config", "--get", "remote.origin.url")
-        standardOutput = stdout
-    }
-    val remoteUrl = stdout.toString().trim()
-    println("Remote URL: ${remoteUrl.removeSuffix(".git")}")
-    return remoteUrl
-}
-
-fun Project.publishJava5hmlA(libDescription: String) {
-    publish5hmlA(libDescription, "java")
-}
-
-fun Project.publish5hmlA(libDescription: String, component: String = "release") {
-    if (!pluginManager.hasPlugin("maven-publish")) {
-        pluginManager.apply("maven-publish")
-    }
-    val gitUrl = gitUrl()
-    extensions.getByType<PublishingExtension>().apply {
-        publications {
-            repositories {
-                maven {
-                    name = "GithubPackages"
-                    url = uri("https://maven.pkg.github.com/5hmlA/sparkj")
-                    credentials {
-                        username = System.getenv("GITHUB_USER")
-                        password = System.getenv("GITHUB_TOKEN")
-                    }
-                }
-                maven {
-                    name = "LocalRepo"
-                    setUrl("repos")
-                }
-            }
-            register("Spark", MavenPublication::class.java) {
-                groupId = group.toString().lowercase()
-                //artifactId = name
-                version = this@publish5hmlA.version.toString()
-                afterEvaluate {
-                    from(components[component])
-                }
-
-                pom {
-                    description = libDescription
-                    url = gitUrl.removeSuffix(".git")
-                    licenses {
-                        license {
-                            name = "The Apache License, Version 2.0"
-                            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("5hmlA")
-                            name.set("ZuYun")
-                            email.set("jonsa.jzy@gmail.com")
-                            url.set("https://github.com/5hmlA")
-                        }
-                    }
-                    scm {
-                        connection.set("scm:git:$gitUrl")
-                        developerConnection.set("scm:git:ssh:${gitUrl.substring(6)}")
-                        url.set(gitUrl.removeSuffix(".git"))
-                    }
-                }
-            }
-        }
-    }
-}
 
 val String.lookDown: String
     get() = "👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇 $this 👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇"
