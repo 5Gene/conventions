@@ -10,6 +10,7 @@ import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.register
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 const val LOCAL_REPO_PATH = "build/repo"
 //查看某个task的依赖关系
@@ -42,12 +43,17 @@ fun Project.publishMavenCentral(libDescription: String, component: String = "rel
     //创建压缩文件task,此task依赖发布library
     tasks.register<Zip>("zipForPublish") {
 //        group = "5hmlA"
+        //先删除之前生成的
+        File(project.projectDir, LOCAL_REPO_PATH).deleteRecursively()
         dependsOn(tasks["publishSparkPublicationToLocalRepoRepository"])
         archiveBaseName = projectName
-        destinationDirectory.set(file(LOCAL_REPO_PATH))
-        from("repos") {
+        //打包到project/build下
+        destinationDirectory.set(file(LOCAL_REPO_PATH).parentFile)
+        //打包project/build/repo下的所有文件
+        from(LOCAL_REPO_PATH) {
             include("**/*")
         }
+        //into("repos")//意思是把所有文件放到into的文件夹repos内再打包
     }
 
     //配置 sign
@@ -61,6 +67,10 @@ fun Project.publishMavenCentral(libDescription: String, component: String = "rel
         sign(tasks["zipForPublish"])
     }
     //实现任务上传到MavenCentral, 此上传task要依赖signZipForPublish
+
+    //执行结束，后输出日志，
+    println("🎉 $projectName 发布成功，点击链接🔗查看: https://central.sonatype.com/publishing/deployments")
+
 }
 
 
