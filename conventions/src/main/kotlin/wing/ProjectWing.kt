@@ -29,6 +29,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.getByType
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
@@ -59,6 +60,9 @@ typealias AndroidComponentsExtensions = AndroidComponentsExtension<CommonExtensi
  */
 val Project.androidExtension
     get(): AndroidCommonExtension? = extensions.findByName("android") as? AndroidCommonExtension
+
+val Project.javaExtension
+    get(): JavaPluginExtension? = extensions.findByType(JavaPluginExtension::class.java)
 
 val Project.androidExtensionComponent
     get(): AndroidComponentsExtensions? = extensions.findByName("androidComponents") as? AndroidComponentsExtensions
