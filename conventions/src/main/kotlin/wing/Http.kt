@@ -8,8 +8,53 @@ import org.gradle.internal.impldep.org.apache.http.util.EntityUtils
 import java.io.DataOutputStream
 import java.io.File
 import java.io.FileInputStream
+import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
+
+
+fun post(url: String, authorization: String, json: String? = null): String? {
+    return request("POST", url, authorization, json)
+}
+
+fun request(method: String = "POST", url: String, authorization: String, json: String? = null): String? {
+    try {
+        // 创建 URL 对象
+        val url = URL(url)
+        // 打开连接
+        val conn = url.openConnection() as HttpURLConnection
+
+        // 设置请求方法为 POST
+        conn.requestMethod = "POST"
+
+        // 设置请求头
+        conn.setRequestProperty("Content-Type", "application/json; utf-8")
+        conn.setRequestProperty("Authorization", authorization)
+        conn.setRequestProperty("Accept", "application/json")
+
+        if (json != null) {// 允许写入数据
+            conn.doOutput = true
+            // 发送请求体
+            conn.outputStream.use { os: OutputStream ->
+                val input: ByteArray = json.toByteArray(Charsets.UTF_8)
+                os.write(input, 0, input.size)
+            }
+        }
+
+        val responseCode = conn.responseCode
+        try {
+            return conn.inputStream.bufferedReader().use { it.readText() }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println("File upload failed with response code $responseCode")
+            return null
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return null
+    }
+}
+
 
 fun uploadFileToServer(url: String, authorization: String, file: File): String? {
     val boundary = "===" + System.currentTimeMillis() + "==="

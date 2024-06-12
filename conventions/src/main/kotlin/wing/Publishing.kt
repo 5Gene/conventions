@@ -43,8 +43,10 @@ fun Project.signingPublications(publishing: PublishingExtension, signingKey: Str
     if (!pluginManager.hasPlugin("signing")) {
         pluginManager.apply("signing")
     }
+    //gpg --armor --export-secret-key 查看signingKey
+    //https://stackoverflow.com/questions/70929152/gradle-signing-plugin
     extensions.getByType<SigningExtension>().apply {
-        val signingKey = System.getenv("ORG_GRADLE_PROJECT_signingKey") ?: signingKey
+        val signingKey = signingKey ?: System.getenv("ORG_GRADLE_PROJECT_signingKey")
         val signingPassword = System.getenv("ORG_GRADLE_PROJECT_signingPassword") ?: "19910113"
         useInMemoryPgpKeys(signingKey, signingPassword)
         sign(publishing.publications["Spark"])
@@ -95,7 +97,7 @@ fun Project.publishMavenCentral(libDescription: String, component: String = "rel
     }
 
     //最后, 执行task即可 ./gradlew publishToMavenCentral
-    println("✨ publishToMavenCentral任务配置成功! 执行: ./gradlew publishToMavenCentral")
+    println("✨ publishToMavenCentral任务配置成功! ./gradlew publishToMavenCentral")
 }
 
 
@@ -121,7 +123,7 @@ fun TaskContainer.registerJavadocJar() {
 
 context(Project)
 fun TaskContainer.registerSourceJar(component: String, emptySourSets: Boolean = false) {
-    register<Jar>("sourcesJar") {
+    register<Jar>("sourceJar") {
         archiveClassifier.set("sources")
         if (!emptySourSets) {
             try {
@@ -247,7 +249,7 @@ abstract class PublishToMavenCentralTask : AbstractCopyTask() {
         //28570f16-da32-4c14-bd2e-c1acc0782365,拿到id
         val deploymentId = uploadResult
         val statusUrl = "https://central.sonatype.com/api/v1/publisher/status?id=$deploymentId"
-        val statusResult = httpPost(statusUrl, mapOf("Authorization" to authorization))
+        val statusResult = post(statusUrl, authorization)
         try {
             val statusMap = Gson().fromJson(statusResult, Map::class.java)
             println("deploymentState: ${statusMap["deploymentState"]}")
