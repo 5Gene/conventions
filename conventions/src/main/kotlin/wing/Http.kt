@@ -25,7 +25,7 @@ fun request(method: String = "POST", url: String, authorization: String, json: S
         val conn = url.openConnection() as HttpURLConnection
 
         // 设置请求方法为 POST
-        conn.requestMethod = "POST"
+        conn.requestMethod = method
 
         // 设置请求头
         conn.setRequestProperty("Content-Type", "application/json; utf-8")
