@@ -1,5 +1,8 @@
 package wing
 
+import asAuthorizationHeader
+import asMultipart
+import multipart
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.file.copy.CopyAction
@@ -17,6 +20,7 @@ import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.register
 import org.gradle.plugins.signing.SigningExtension
 import org.jetbrains.kotlin.com.google.gson.Gson
+import post
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.time.LocalDateTime
@@ -238,18 +242,18 @@ abstract class PublishToMavenCentralTask : AbstractCopyTask() {
             "${repositoryUsername.get()}:${repositoryPassword.get()}".toByteArray(),
         ).toString(Charsets.UTF_8)
         val authorization = "Bearer $userToken"
-
+        println("********${authorization.substring(16)}")
         val uploadName = "${groupId.get()}:${zipFile.name.replace("zip", DateTimeFormatter.ofPattern("yyyyMMddHHmm").format(LocalDateTime.now()))}"
         println("to upload to MavenCentral > $uploadName")
         //Uploading a Deployment Bundle,    publishingType=USER_MANAGED 手动发布
         val uploadUrl = "https://central.sonatype.com/api/v1/publisher/upload?name=$uploadName&publishingType=AUTOMATIC"
 //        val uploadResult = uploadingDeploymentBundle(uploadUrl, authorization, zipFile)
-        val uploadResult = uploadFileToServer(uploadUrl, authorization, zipFile)
+        val uploadResult = multipart(uploadUrl, authorization.asAuthorizationHeader(), file = zipFile.asMultipart("bundle"))
         println("uploadingDeploymentBundle -> result: $uploadResult")
         //28570f16-da32-4c14-bd2e-c1acc0782365,拿到id
         val deploymentId = uploadResult
         val statusUrl = "https://central.sonatype.com/api/v1/publisher/status?id=$deploymentId"
-        val statusResult = post(statusUrl, authorization)
+        val statusResult = post(statusUrl, authorization.asAuthorizationHeader())
         try {
             val statusMap = Gson().fromJson(statusResult, Map::class.java)
             println("deploymentState: ${statusMap["deploymentState"]}")

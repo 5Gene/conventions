@@ -8,6 +8,16 @@ plugins {
     id("com.gradle.plugin-publish") version "1.2.1"
 }
 
+//主动开启Junit,system.out日志输出显示在控制台,默认控制台不显示system.out输出的日志
+//https://docs.gradle.org/current/kotlin-dsl/gradle/org.gradle.api.tasks.testing/-abstract-test-task/test-logging.html
+//https://stackoverflow.com/questions/9356543/logging-while-testing-through-gradle
+tasks.withType<Test>() {
+    testLogging {
+        showStandardStreams = true
+//        testLogging.exceptionFormat = TestExceptionFormat.FULL
+    }
+}
+
 fun String.print() {
     println("\u001B[93m✨ $name >> ${this}\u001B[0m")
 }
@@ -49,6 +59,7 @@ dependencies {
 
     compileOnly(kotlin(module = "gradle-plugin", version = libs.versions.kotlin.get()))
     implementation("com.google.protobuf:protobuf-gradle-plugin:${libs.versions.protobuf.plugin.get()}")
+    testImplementation(libs.test.junit)
 //    compileOnly(gradleKotlinDsl())
     // help->dependencies只会输出implementation的库的依赖关系
 }
@@ -60,7 +71,7 @@ dependencies {
 
 //group = "osp.sparkj.plugin"
 group = "io.github.5hmlA"
-version = "2.0.5"
+version = "2.0.6"
 
 publishing {
     repositories {

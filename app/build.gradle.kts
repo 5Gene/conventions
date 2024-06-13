@@ -11,6 +11,7 @@ plugins {
     id("io.github.5hmlA.protobuf")
     id("io.github.5hmlA.knife")
 }
+//https://stackoverflow.com/questions/32352816/what-the-difference-in-applying-gradle-plugin?rq=2
 
 knife {
     onVariants { variants ->
