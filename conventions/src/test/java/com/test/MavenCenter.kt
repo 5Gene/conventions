@@ -3,15 +3,15 @@ import com.test.Http.asAuthorizationHeader
 import java.io.File
 import java.util.Base64
 
-val authorization = "Bearer UGt6ay9MRFA6aWJqd25CQlArdFcwNU1wNC9BMWNTS1hyZGNYWTRDOHk2TElHTUZsUXNOcXMK"
+val authorization = "Bearer UGt6ay9MRFA6aWJqd25CQlArdFcwNU1"
 
 val defDeploymentId = "7dadf850-6adc-4d3c-ae67-c48b6a93a180"
 
-fun geneToken(): String {
-    //echo "Pkzk/LDP:ibjwnBBP+tW05Mp4/A1cSKXrdcXY4C8y6LIGMFlQsNqs" | base64
+fun geneToken(name: String, pwd: String): String {
+    //echo "Pkzk/LDP:tW05Mp4/A1cSKXrdcXY4C8y6LIGMFlQsNqs" | base64
     //ZXhhbXBsZV91c2VybmFtZTpleGFtcGxlX3Bhca3N3b3JkCg==
     val userToken = Base64.getEncoder().encode(
-        "Pkzkxxxx:xxxxtW05Mp4/A1cSKXrdcXY4C8y6LIGMFlQsNqs".toByteArray(),
+        "$name:$pwd".toByteArray(),
     ).toString(Charsets.UTF_8)
     return "Bearer $userToken"
 }
