@@ -43,15 +43,15 @@ fun Task.showDependencies(action: ((Task) -> Unit)? = null) {
     }
 }
 
-fun Project.signingPublications(publishing: PublishingExtension, signingKey: String? = null) {
+fun Project.signingPublications(publishing: PublishingExtension) {
     if (!pluginManager.hasPlugin("signing")) {
         pluginManager.apply("signing")
     }
     //gpg --armor --export-secret-key 查看signingKey
     //https://stackoverflow.com/questions/70929152/gradle-signing-plugin
     extensions.getByType<SigningExtension>().apply {
-        val signingKey = signingKey ?: System.getenv("ORG_GRADLE_PROJECT_signingKey")
-        val signingPassword = System.getenv("ORG_GRADLE_PROJECT_signingPassword") ?: "19910113"
+        val signingKey = System.getenv("SIGN_GPG_KEY")
+        val signingPassword = System.getenv("SIGN_GPG_PASSWORD")
         useInMemoryPgpKeys(signingKey, signingPassword)
         sign(publishing.publications["Spark"])
     }
@@ -63,13 +63,13 @@ fun Project.signingPublications(publishing: PublishingExtension, signingKey: Str
  * - 2 通过singing签名
  * - 3 签名后通过task上传
  */
-fun Project.publishMavenCentral(libDescription: String, component: String = "release", signingKey: String? = null, emptySourSets: Boolean = false) {
+fun Project.publishMavenCentral(libDescription: String, component: String = "release", emptySourSets: Boolean = false) {
     val projectName = name
     //配置publish任务
     val publishing = publish5hmlA(libDescription, component, emptySourSets)
 
     //配置签名
-    signingPublications(publishing, signingKey)
+    signingPublications(publishing)
     //配置压缩任务，后续上传需要
     //1 publishSparkPublicationToLocalRepoRepository
     //2 zipForSignedPublication
@@ -242,7 +242,7 @@ abstract class PublishToMavenCentralTask : AbstractCopyTask() {
             "${repositoryUsername.get()}:${repositoryPassword.get()}".toByteArray(),
         ).toString(Charsets.UTF_8)
         val authorization = "Bearer $userToken"
-        println("********${authorization.substring(16)}")
+        println(authorization)
         val uploadName = "${groupId.get()}:${zipFile.name.replace("zip", DateTimeFormatter.ofPattern("yyyyMMddHHmm").format(LocalDateTime.now()))}"
         println("to upload to MavenCentral > $uploadName")
         //Uploading a Deployment Bundle,    publishingType=USER_MANAGED 手动发布

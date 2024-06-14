@@ -48,24 +48,24 @@ fun Long.asContentLength() = "Content-Length: $this"
  *      HTTP 请求头, 请求头中告诉服务器,boundary具体内容是什么
  * POST /upload HTTP/1.1
  * Host: example.com
- * Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+ * Content-Type: multipart/form-data; boundary=WebKitFormBoundary7MA4YWxkTrZu0gW
  * Content-Length: <calculated length>
  *
  *     HTTP 请求体,请求体中,使用boundary边界字符串则明确地分隔了每个部分
- * ------WebKitFormBoundary7MA4YWxkTrZu0gW
+ * --WebKitFormBoundary7MA4YWxkTrZu0gW
  * Content-Disposition: form-data; name="description"
  *
  * This is an example file 这是表单的第1个值(description:This is an example file)
- * ------WebKitFormBoundary7MA4YWxkTrZu0gW
+ * --WebKitFormBoundary7MA4YWxkTrZu0gW
  * Content-Disposition: form-data; name="what"
  *
  * 你好 这是表单的第2个值(what:你好)
- * ------WebKitFormBoundary7MA4YWxkTrZu0gW
+ * --WebKitFormBoundary7MA4YWxkTrZu0gW
  * Content-Disposition: form-data; name="bundle"; filename="auto-service.zip"
  * Content-Type: application/octet-stream
  *
  * <binary content of the file> 这是表单的第3个值(bundle:文件流)
- * ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+ * --WebKitFormBoundary7MA4YWxkTrZu0gW--
  * ```
  * ### 格式为
  *  - boundary起始边界：用于标识一个新的部分的开始。
@@ -239,23 +239,23 @@ fun request(request: Request): String? {
             //写入表单数据
             val twoHyphens = "--"
             val boundary = "===${System.currentTimeMillis()}==="
-//            val boundary = "------WebKitFormBoundary7MA4YWxkTrZu0gW$formDataLineEnd"
+//            val boundary = "xxxxxxxxxxxxxxxxxxxxxxxxxxx"
             //请求头标注Content-Type,并明确boundary
             conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=$boundary")
-            // ------WebKitFormBoundary7MA4YWxkTrZu0gW
+            // --xxxxxxxxxxxxxxxxxxxxxxxxxxx 必须要--开头
             // Content-Disposition: form-data; name="description"
             //
             // This is an example file 这是表单的第1个值(description:This is an example file)
-            // ------WebKitFormBoundary7MA4YWxkTrZu0gW
+            // --xxxxxxxxxxxxxxxxxxxxxxxxxxx
             // Content-Disposition: form-data; name="what"
             //
             // 你好 这是表单的第2个值(what:你好)
-            // ------WebKitFormBoundary7MA4YWxkTrZu0gW
+            // --xxxxxxxxxxxxxxxxxxxxxxxxxxx
             // Content-Disposition: form-data; name="bundle"; filename="auto-service.zip"
             // Content-Type: application/octet-stream
             //
             // <binary content of the file> 这是表单的第3个值(bundle:文件流)
-            // ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+            // --xxxxxxxxxxxxxxxxxxxxxxxxxxx-- 结尾必须要--开头--结束
             conn.outputStream.use {
                 //开始只有一个--也就是--boundary\r\n
                 val headBoundary = (twoHyphens + boundary + formDataLineEnd).toByteArray()
