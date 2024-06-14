@@ -1,7 +1,11 @@
 package demo
 
-import drop
 import org.junit.Test
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 class Deploy(val deploymentId: String)
@@ -29,6 +33,10 @@ class ExampleUnitTest {
 //            } catch (e: Exception) {
 //            }
 //        }
-        drop("ad889c94-b80f-4770-be93-219d2bcb78a1")
+//        drop("ad889c94-b80f-4770-be93-219d2bcb78a1")
+        val time = DateTimeFormatter.ofPattern("yyyyMMddHHmm").format(ZonedDateTime.now(ZoneId.of("Asia/Shanghai")))
+        val time2 = DateTimeFormatter.ofPattern("yyyyMMddHHmm", Locale.CANADA).format(LocalDateTime.now())
+        println(time)
+        println(time2)
     }
 }

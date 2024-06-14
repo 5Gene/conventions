@@ -23,7 +23,8 @@ import org.jetbrains.kotlin.com.google.gson.Gson
 import post
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Base64
 
@@ -243,7 +244,8 @@ abstract class PublishToMavenCentralTask : AbstractCopyTask() {
         ).toString(Charsets.UTF_8)
         val authorization = "Bearer $userToken"
         println(authorization)
-        val uploadName = "${groupId.get()}:${zipFile.name.replace("zip", DateTimeFormatter.ofPattern("yyyyMMddHHmm").format(LocalDateTime.now()))}"
+        val time = DateTimeFormatter.ofPattern("yyyyMMddHHmm").format(ZonedDateTime.now(ZoneId.of("Asia/Shanghai")))
+        val uploadName = "${groupId.get()}:${zipFile.name.replace("zip", time)}"
         println("to upload to MavenCentral > $uploadName")
         //Uploading a Deployment Bundle,    publishingType=USER_MANAGED 手动发布
         val uploadUrl = "https://central.sonatype.com/api/v1/publisher/upload?name=$uploadName&publishingType=AUTOMATIC"

@@ -71,7 +71,7 @@ dependencies {
 
 //group = "osp.sparkj.plugin"
 group = "io.github.5hmlA"
-version = "2.0.7"
+version = "2.0.8"
 
 publishing {
     repositories {
