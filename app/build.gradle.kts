@@ -29,6 +29,14 @@ knife {
                         "com.osp.app.MainActivity#onCreate#*=>*#testRemove#*",
                         "com.osp.app.MainActivity#testTryCatch#*=>TryCatch",
                     )
+                    execludes(
+                        //"com/osp/app/*",
+                        //"**/EmptyAllMethod*",
+                        //排除所有EmptyAllMethodObject类
+                        //"**/EmptyAllMethodObject",
+                        //排除android*下的所有类
+                        "android**",
+                    )
                 }
                 onArtifactBuilt {
                     copy {

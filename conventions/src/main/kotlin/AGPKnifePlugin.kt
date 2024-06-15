@@ -34,16 +34,13 @@ class AGPKnifePlugin : AbsAndroidConfig() {
              */
             onVariants(selector().all()) { variant: Variant ->
                 knifeImpl.onVariants?.let {
+                    it.invoke(variant)//variant回调到build.gradle
+                    //build.gradle中通过utility{}注册asmTransform到variantAction
                     log("knife > onVariant:${variant.name}")
-                    variantKnifeActionImpl.doListenArtifact = {
-                        //存在listenArtifact的时候才创建task
-                        tryListenArtifact(variantKnifeActionImpl, project, variant)
-                    }
+                    //存在listenArtifact的时候才创建task
+                    tryListenArtifact(variantKnifeActionImpl, project, variant)
                     //transform
-                    variantKnifeActionImpl.doAsmTransform = {
-                        tryAsmTransform(variantKnifeActionImpl, project, variant)
-                    }
-                    it.invoke(variant)
+                    tryAsmTransform(variantKnifeActionImpl, project, variant)
                 }
             }
         }
@@ -54,26 +51,44 @@ class AGPKnifePlugin : AbsAndroidConfig() {
         variant: Variant
     ) {
         project.log("knife > tryAsmTransform:${variant.name}  ${variantAction.transformConfigs}")
-        variantAction.transformConfigs?.let { configs ->
+        variantAction.transformConfigs?.let { asmTransform ->
+
             val transformConfigs = TransformConfigImpl()
-            configs(transformConfigs)
+            //build.gradle中配置的asmTransform {} 这个回调就是configs,这里执行asmTransform {}中代码块才会执行
+            asmTransform(transformConfigs)
+
             if (transformConfigs.modifyConfigs.isEmpty()) {
-                println(transformConfigs.modifyConfigs.toStr().red)
+                project.log("knife > tryAsmTransform:${variant.name} no transformConfigs skip >>".red)
                 return
             }
-            project.log("knife > tryAsmTransform:${variant.name}  ${transformConfigs.modifyConfigs.toStr()}".red)
 
+            //https://developer.android.google.cn/reference/tools/gradle-api/8.3/null/com/android/build/api/variant/Instrumentation
+            //instrumentation.excludes.add("com/example/donotinstrument/**")
+            //variant.instrumentation.excludes.add("**/*Test")
+            //一个*和两个*的区别【两个*表示匹配之前或者之后所有】
+            //  两个*表示多级匹配【**/EmptyAllMethod,匹配任意包下的所有名为EmptyAllMethod的类】
+            //  两个*表示多级匹配【android**,匹配任意android开头的所有包下的所有类】
+            //  一个*表示类名匹配【com/osp/app/*,app包类下的所有】
+            //  一个*表示类名匹配【**/EmptyAllMethod*,匹配EmptyAllMethod开头的所有类】
+            //The set of glob patterns to exclude from instrumentation.
+            variant.instrumentation.excludes.addAll(transformConfigs.excludes)
+
+            //https://github1s.com/android/gradle-recipes/blob/agp-8.2/asmTransformClasses/build-logic/plugins/src/main/kotlin/CheckAsmTransformationTask.kt
+            //https://github1s.com/android/gradle-recipes/blob/agp-8.2/asmTransformClasses/build-logic/plugins/src/main/kotlin/CustomPlugin.kt
+            //COPY_FRAMES是默认值
+            //FramesComputationMode.COPY_FRAMES 此Mode修改方法和操作变量后要自己计算
+            transformConfigs.framesComputationMode?.let {
+                variant.instrumentation.setAsmFramesComputationMode(it)
+                //variant.instrumentation.setAsmFramesComputationMode(
+                //    FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS
+                //)
+            }
+
+            project.log("knife > tryAsmTransform:${variant.name}  ${transformConfigs.modifyConfigs.toStr()}".red)
             val modifyConfigs = transformConfigs.modifyConfigs.map {
                 it.toModifyConfig()
             }
 
-            //https://github1s.com/android/gradle-recipes/blob/agp-8.2/asmTransformClasses/build-logic/plugins/src/main/kotlin/CheckAsmTransformationTask.kt
-            //https://github1s.com/android/gradle-recipes/blob/agp-8.2/asmTransformClasses/build-logic/plugins/src/main/kotlin/CustomPlugin.kt
-//            variant.instrumentation.setAsmFramesComputationMode(
-//                FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS
-//            )
-            //COPY_FRAMES是默认值
-            //FramesComputationMode.COPY_FRAMES 此Mode修改方法和操作变量后要自己计算
             variant.instrumentation.transformClassesWith(
                 KnifeAsmClassVisitorFactory::class.java,
                 InstrumentationScope.ALL,
