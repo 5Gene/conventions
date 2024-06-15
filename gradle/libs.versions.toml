@@ -264,7 +264,9 @@ compose = [
     "coil-compose",
     "androidx-paging-compose",
 ]
+
 androidx-room = ["androidx-room-runtime", "androidx-room-ktx", "androidx-room-paging"]
+
 #https://developer.android.google.cn/studio/profile/benchmark?hl=zh-cn
 androidx-benchmark = [
     "androidx-test-ext-junit",
@@ -272,6 +274,7 @@ androidx-benchmark = [
     "androidx-test-uiautomator",
     "androidx-benchmark-macro-junit4"
 ]
+
 okhttp = ["okhttp-logging", "okhttp", "retrofit", "retrofit-kotlinx-serialization-converter"]
 
 koin = ["koin-android", "koin-android-compat", "koin-androidx-compose", "koin-androidx-workmanager", "koin-compose",
@@ -331,8 +334,13 @@ android-project = [
     "kotlinx-datetime",
     "kotlinx-io",
 ]
-animation = ["androidx-transition-ktx", "androidx-dynamicanimation",
-    "androidx-animation-core", "androidx-dynamicanimation-ktx", "androidx-core-ktx", ]
+
+animation = [
+    "androidx-transition-ktx", "androidx-dynamicanimation",
+    "androidx-animation-core", "androidx-dynamicanimation-ktx",
+    "androidx-core-ktx",
+]
+
 [plugins]
 #https://developer.android.com/build/releases/gradle-plugin
 #https://developer.android.com/build/jdks?hl=zh-cn
@@ -340,7 +348,7 @@ animation = ["androidx-transition-ktx", "androidx-dynamicanimation",
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
 android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 android-test = { id = "com.android.test", version.ref = "android-gradle-plugin" }
-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
