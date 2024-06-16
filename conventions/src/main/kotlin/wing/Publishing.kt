@@ -10,14 +10,19 @@ import org.gradle.api.provider.Property
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.AbstractCopyTask
+import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.existing
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.getValue
+import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.registering
 import org.gradle.plugins.signing.SigningExtension
 import org.jetbrains.kotlin.com.google.gson.Gson
 import post
@@ -77,11 +82,25 @@ fun Project.publishMavenCentral(libDescription: String, component: String = "rel
     //3 publishToMavenCentral
     // 1 发布,签名
     //这个task会自动依赖signSparkPublication
+    //https://docs.gradle.org/current/userguide/kotlin_dsl.html
+//    val publishSparkPublicationToLocalRepoRepository by tasks.existing {
+//        //执行之前先清空之前发布的内容
+//        File(LOCAL_REPO_PATH).deleteRecursively()
+//    }
     val publishToLocalRepo = tasks["publishSparkPublicationToLocalRepoRepository"].doFirst {
         //执行之前先清空之前发布的内容
         File(LOCAL_REPO_PATH).deleteRecursively()
     }
     // 2 打包,依赖任务publishSparkPublicationToLocalRepoRepository
+//    val zipForSignedPublication by tasks.registering(Zip::class) {
+//        group = "5hmla"
+//        dependsOn(publishToLocalRepo)
+//        archiveBaseName = projectName
+//        destinationDirectory.set(file("build/zip"))
+//        from(LOCAL_REPO_PATH) {
+//            include("**/*")
+//        }
+//    }
     val zipForSignedPublicationTask = tasks.register<Zip>("zipForSignedPublication") {
         group = "5hmla"
         dependsOn(publishToLocalRepo)
