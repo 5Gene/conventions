@@ -1,5 +1,8 @@
 plugins {
     `kotlin-dsl`
+    //https://plugins.gradle.org/plugin/org.gradle.kotlin.kotlin-dsl
+    //https://docs.gradle.org/current/userguide/kotlin_dsl.html
+//    id("org.gradle.kotlin.kotlin-dsl") version "4.4.0"
     `kotlin-dsl-precompiled-script-plugins`
 //    `java-gradle-plugin`
 //    kotlin("jvm") version "1.9.22"
@@ -47,7 +50,7 @@ dependencies {
 //    编译插件的时候就会用到，不需要配置，编译的时候修改就行了
 //    val agp = sysprop("dep.agp.ver", "8.2.0")
     compileOnly("com.android.tools.build:gradle-api:${libs.versions.android.gradle.plugin.get()}")
-    compileOnly("com.android.tools.build:gradle:${libs.versions.android.gradle.plugin.get()}")
+    //compileOnly("com.android.tools.build:gradle:${libs.versions.android.gradle.plugin.get()}")
     //gradle plugin id 规则 plugin_id:plugin_id.gradle.plugin:version
     compileOnly("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:${libs.versions.ksp.get()}")
     compileOnly("androidx.room:androidx.room.gradle.plugin:${libs.versions.androidx.room.get()}")
@@ -71,7 +74,7 @@ dependencies {
 
 //group = "osp.sparkj.plugin"
 group = "io.github.5hmlA"
-version = "2.0.9"
+version = "2.0.10"
 
 publishing {
     repositories {
@@ -84,8 +87,8 @@ publishing {
             }
         }
         maven {
-            //name会成为任务名字的一部分 publishOspPublicationTo [LocalTest] Repository
-            name = "LocalTest"
+            //name会成为任务名字的一部分 publishOspPublicationTo [LocalRepo] Repository
+            name = "LocalRepo"
             setUrl("${rootDir}/repo")
         }
     }
