@@ -177,17 +177,28 @@ fun Project.publish5hmlA(libDescription: String, component: String = "release", 
                 groupId = group.toString().lowercase()
                 //artifactId = name
                 version = this@publish5hmlA.version.toString()
-                if (component == "release") {
-                    afterEvaluate {
-                        from(components.getByName(component))
+                val foundComponent = components.any { it.name == component }
+                if (foundComponent) {
+                    components.forEach {
+                        println("components-> ${it.name}")
                     }
-                } else {
-//                  下面配置会出现 Cannot publish module metadata because an artifact from the 'java' component has been removed
-//                  afterEvaluate {
-//                      from(components.getByName("java"))
-//                  }
                     from(components[component])
+                } else {
+                    afterEvaluate {
+                        components.forEach {
+                            println("afterEvaluate-> components-> ${it.name}")
+                        }
+                        //from(components.getByName(component))
+                        from(components[component])
+                        //下面的方式在pom中不会自动生成依赖
+                        //artifact(tasks.getByName("bundleDebugAar"))
+                    }
                 }
+                //下面配置会出现 Cannot publish module metadata because an artifact from the 'java' component has been removed
+                //afterEvaluate {
+                //    from(components.getByName("java"))
+                //}
+
                 //必须是jar所以要把javadoc打包成jar
                 artifact(tasks.named("javadocJar"))
                 artifact(tasks.named("sourceJar"))
