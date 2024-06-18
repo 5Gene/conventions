@@ -46,6 +46,8 @@ jobs:
       # Runs a single command using the runners shell
       - name: 🔥 publishing plugin
         run: |
+          echo 🐛 如果遇到Error: Could not find or load main class org.gradle.wrapper.GradleWrapperMain
+          echo 💊 那么说明是因为gradle目录没同步到github导致的,检查下是否此目录下有文件没上传
           chmod +x gradlew
           ./gradlew :conventions:publishPlugins
         env:

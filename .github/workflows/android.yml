@@ -17,14 +17,17 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
-      - name: 🐼 Set up JDK 17
+      - name: 🐼 Set up JDK 18
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: 🔔 Grant execute permission for gradlew
-        run: chmod +x gradlew
+        run: |
+          echo 🐛 如果遇到Error: Could not find or load main class org.gradle.wrapper.GradleWrapperMain
+          echo 💊 那么说明是因为gradle目录没同步到github导致的,检查下是否此目录下有文件没上传
+          chmod +x ./gradlew
       - name: 💪 build apk
         run: ./gradlew assembleDebug
 
