@@ -32,7 +32,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-
       - name: 🔪 Create key=value to gradle.properties
         run: |
           echo 🔪 Create key=value to gradle.properties
