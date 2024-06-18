@@ -11,8 +11,8 @@ Some plugins that simplify the configuration of gradle projects can improve the 
 
 # Getting Start
 
-![](https://img.shields.io/badge/java-18-lightgreen.svg)
-![](https://img.shields.io/badge/kotlin-1.9.24-lightgreen.svg)
+![](https://img.shields.io/badge/java-17-lightgreen.svg)
+![](https://img.shields.io/badge/kotlin-2.0.0-lightgreen.svg)
 
 ## First you have to enable *version catalog*
 - You can get ````libs.versions.toml```` file from [android/nowinandroid](https://github.com/android/nowinandroid) (of course you can also get it from this project) , then Configure it in the gradle directory of your project

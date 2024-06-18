@@ -16,12 +16,14 @@ coreKtx = "1.12.0"
 hilt = "2.49"
 collectionKtx = "1.4.0"
 constraintlayout = "2.1.4"
+preferenceKtx = "1.2.1"
 constraintlayoutCompose = "1.0.1"
 dynamicanimationKtx = "1.0.0-alpha03"
 lifecycle = "2.8.2"
 lottie = "3.7.0"
 material = "1.12.0"
 navigationFragmentKtx = "2.7.7"
+fragmentKtx = "1.8.0"
 navigationUiKtx = "2.7.7"
 paging = "3.3.0"
 paletteKtx = "1.0.0"
@@ -81,6 +83,7 @@ workRuntimeKtx = "2.9.0"
 protobuf = "4.26.1"
 protobuf-plugin = "0.9.4"
 auto-service = "1.1.1"
+activity = "1.8.0"
 
 [libraries]
 google-auto-service-anno = { module = "com.google.auto.service:auto-service-annotations", version.ref = "auto-service" }
@@ -107,6 +110,9 @@ androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
+androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-compose-constraintlayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
@@ -165,7 +171,6 @@ accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiper
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanistSwiperefresh" }
 
 google-material = { module = "com.google.android.material:material", version.ref = "material" }
-androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 
 ktor-client = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
@@ -231,6 +236,7 @@ spotless-gradle-plugin = { module = "com.diffplug.spotless:spotless-plugin-gradl
 detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 ksp-process-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 
 
 [bundles]
@@ -264,9 +270,7 @@ compose = [
     "coil-compose",
     "androidx-paging-compose",
 ]
-
 androidx-room = ["androidx-room-runtime", "androidx-room-ktx", "androidx-room-paging"]
-
 #https://developer.android.google.cn/studio/profile/benchmark?hl=zh-cn
 androidx-benchmark = [
     "androidx-test-ext-junit",
@@ -274,7 +278,6 @@ androidx-benchmark = [
     "androidx-test-uiautomator",
     "androidx-benchmark-macro-junit4"
 ]
-
 okhttp = ["okhttp-logging", "okhttp", "retrofit", "retrofit-kotlinx-serialization-converter"]
 
 koin = ["koin-android", "koin-android-compat", "koin-androidx-compose", "koin-androidx-workmanager", "koin-compose",
@@ -304,6 +307,8 @@ android-view = [
     "androidx-recyclerview",
     "androidx-viewpager2",
     "androidx-navigation-ui-ktx",
+    "androidx-preference-ktx",
+    "androidx-fragment-ktx",
     "androidx-palette-ktx",
 ]
 
@@ -311,6 +316,7 @@ android-view = [
 android-project = [
     "androidx-webkit",
     "google-material",
+    "androidx-fragment-ktx",
     "androidx-activity-ktx",
     "androidx-appcompat",
     "androidx-window",
@@ -334,13 +340,8 @@ android-project = [
     "kotlinx-datetime",
     "kotlinx-io",
 ]
-
-animation = [
-    "androidx-transition-ktx", "androidx-dynamicanimation",
-    "androidx-animation-core", "androidx-dynamicanimation-ktx",
-    "androidx-core-ktx",
-]
-
+animation = ["androidx-transition-ktx", "androidx-dynamicanimation",
+    "androidx-animation-core", "androidx-dynamicanimation-ktx", "androidx-core-ktx", ]
 [plugins]
 #https://developer.android.com/build/releases/gradle-plugin
 #https://developer.android.com/build/jdks?hl=zh-cn

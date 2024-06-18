@@ -151,8 +151,8 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
         compileOptions {
             // Up to Java 11 APIs are available through desugaring
             // https://developer.android.com/studio/write/java11-minimal-support-table
-            sourceCompatibility = JavaVersion.VERSION_18
-            targetCompatibility = JavaVersion.VERSION_18
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
             encoding = "UTF-8"
             //isCoreLibraryDesugaringEnabled = true
         }
@@ -161,7 +161,7 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
 
     context(Project) override fun kotlinOptionsConfig(): KotlinJvmCompilerOptions.() -> Unit = {
         super.kotlinOptionsConfig().invoke(this)
-        jvmTarget.set(JvmTarget.JVM_18)
+        jvmTarget.set(JvmTarget.JVM_17)
         freeCompilerArgs.add("-Xcontext-receivers")
         //apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
