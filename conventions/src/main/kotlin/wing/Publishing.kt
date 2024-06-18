@@ -10,19 +10,14 @@ import org.gradle.api.provider.Property
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.AbstractCopyTask
-import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.assign
-import org.gradle.kotlin.dsl.existing
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.registering
 import org.gradle.plugins.signing.SigningExtension
 import org.jetbrains.kotlin.com.google.gson.Gson
 import post
@@ -137,25 +132,39 @@ fun Project.gitUrl(): String {
     return remoteUrl
 }
 
-fun TaskContainer.registerJavadocJar() {
+fun TaskContainer.registerJavadocJar(empty: Boolean = false) {
     register<Jar>("javadocJar") {
-        //tasks.named("javadoc")任务生成javadoc,空的javadoc这里就不执行任务即可
-        from(named("javadoc"))
         archiveClassifier.set("javadoc")
+        if (!empty && findByName("javadoc") != null) {
+            //tasks.named("javadoc")任务生成javadoc,空的javadoc这里就不执行任务即可
+            from(named("javadoc"))
+        }
     }
 }
 
 context(Project)
-fun TaskContainer.registerSourceJar(component: String, emptySourSets: Boolean = false) {
+fun TaskContainer.registerSourceJar(component: String, empty: Boolean = true) {
+    if (!empty && (component == "release" || component == "debug")) {
+        //android-gradle-api中的LibraryExtension为com.android.build.api.dsl.LibraryExtension拿不到srcDirs
+        //android-gradle中的LibraryExtension为com.android.build.gradle.LibraryExtension可以拿到sourceSet的srcDirs
+        //所以android项目要打包源码的话需要手动添加sourceJar的task
+        println(
+            """
+//android项目要打包sourceJar必须把下面代码添加到gradle中
+tasks.register<Jar>("sourceJar") {
+    from(android.sourceSets.getByName("main").java.srcDirs)
+    archiveClassifier.set("sources")
+}
+        """.red
+        )
+        return
+    }
     register<Jar>("sourceJar") {
         archiveClassifier.set("sources")
-        if (!emptySourSets) {
+        if (!empty) {
             try {
                 if (component == "java") {
                     from(javaExtension!!.sourceSets["main"].allSource)
-                } else {
-                    from(androidExtension!!.sourceSets["main"].java)
-                    from(androidExtension!!.sourceSets["main"].kotlin)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

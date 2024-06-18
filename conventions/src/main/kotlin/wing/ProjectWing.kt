@@ -61,6 +61,9 @@ typealias AndroidComponentsExtensions = AndroidComponentsExtension<CommonExtensi
 val Project.androidExtension
     get(): AndroidCommonExtension? = extensions.findByName("android") as? AndroidCommonExtension
 
+val Project.androidLibExtension
+    get(): AndroidCommonExtension? = extensions.findByName("android") as? LibraryExtension
+
 val Project.javaExtension
     get(): JavaPluginExtension? = extensions.findByType(JavaPluginExtension::class.java)
 
