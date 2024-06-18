@@ -3,7 +3,7 @@ import com.test.Http.asAuthorizationHeader
 import java.io.File
 import java.util.Base64
 
-val authorization = "Bearer UGt6ay9MRFA6aWJqd25CQlArdFcwNU1"
+val authorization = "Bearer UGt6ay9MRFA6aWJqd25CQlArdFcwNU1wNC9BMWNTS1hyZGNYWTRDOHk2TElHTUZsUXNOcXMK"
 
 val defDeploymentId = "7dadf850-6adc-4d3c-ae67-c48b6a93a180"
 
