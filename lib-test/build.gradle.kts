@@ -1,12 +1,10 @@
+import wing.publish5hmlA
+
 plugins {
     alias(libs.plugins.android.library) apply true
     alias(libs.plugins.kotlin.android) apply false
-//    alias(libs.plugins.kotlin.jvm) apply false
-//    alias(libs.plugins.kotlin.serialization) apply false
-//    alias(libs.plugins.hilt) apply false
-//    alias(libs.plugins.ksp) apply false
-//    alias(libs.plugins.protobuf) apply false
-//    id("io.github.5hmlA.android.compose")
+    alias(libs.plugins.room) apply false
+    alias(libs.plugins.ksp) apply false
     id("io.github.5hmlA.android")
     id("io.github.5hmlA.knife")
 }
@@ -44,3 +42,6 @@ android {
         viewBinding = true
     }
 }
+
+publish5hmlA("test")
+//publishMavenCentral("test")

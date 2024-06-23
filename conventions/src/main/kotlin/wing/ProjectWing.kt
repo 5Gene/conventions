@@ -62,7 +62,7 @@ val Project.androidExtension
     get(): AndroidCommonExtension? = extensions.findByName("android") as? AndroidCommonExtension
 
 val Project.androidLibExtension
-    get(): AndroidCommonExtension? = extensions.findByName("android") as? LibraryExtension
+    get(): LibraryExtension? = extensions.findByName("android") as? LibraryExtension
 
 val Project.javaExtension
     get(): JavaPluginExtension? = extensions.findByType(JavaPluginExtension::class.java)
@@ -168,3 +168,7 @@ val String.lookDown: String
 
 val String.lookup: String
     get() = "👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆 $this 👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆"
+
+fun <T> Project.property(name: String, def: T): T {
+    return findProperty(name) as? T ?: def
+}

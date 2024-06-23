@@ -2,6 +2,7 @@ import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
 
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -54,4 +55,5 @@ allGradleProject.forEachIndexed { index, path ->
 
 
 include(":app")
-//include(":lib-test")
+include(":lib-test")
+include(":lib-java")

@@ -2,17 +2,17 @@ package wing
 
 import asAuthorizationHeader
 import asMultipart
+import com.android.build.api.dsl.LibraryExtension
 import multipart
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.file.copy.CopyAction
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.Property
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.AbstractCopyTask
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.TaskContainer
-import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.get
@@ -44,30 +44,19 @@ fun Task.showDependencies(action: ((Task) -> Unit)? = null) {
     }
 }
 
-fun Project.signingPublications(publishing: PublishingExtension) {
-    if (!pluginManager.hasPlugin("signing")) {
-        pluginManager.apply("signing")
-    }
-    //gpg --armor --export-secret-key 查看signingKey
-    //https://stackoverflow.com/questions/70929152/gradle-signing-plugin
-    extensions.getByType<SigningExtension>().apply {
-        val signingKey = System.getenv("SIGN_GPG_KEY")
-        val signingPassword = System.getenv("SIGN_GPG_PASSWORD")
-        useInMemoryPgpKeys(signingKey, signingPassword)
-        sign(publishing.publications["Spark"])
-    }
+fun Project.publishJava5hmlA(libDescription: String): PublishingExtension {
+    return publish5hmlA(libDescription, "java")
 }
-
 
 /**
  * - 1 配置publish
  * - 2 通过singing签名
  * - 3 签名后通过task上传
  */
-fun Project.publishMavenCentral(libDescription: String, component: String = "release", emptySourSets: Boolean = false) {
+fun Project.publishMavenCentral(libDescription: String, component: String = "release") {
     val projectName = name
-    //配置publish任务
-    val publishing = publish5hmlA(libDescription, component, emptySourSets)
+    //配置publish任务, 发布到MavenCentral必须要有sources.jar和javadoc.jar
+    val publishing = publish5hmlA(libDescription, component)
 
     //配置签名
     signingPublications(publishing)
@@ -119,6 +108,37 @@ fun Project.publishMavenCentral(libDescription: String, component: String = "rel
     println("✨ publishToMavenCentral任务配置成功! ./gradlew publishToMavenCentral")
 }
 
+private fun Project.signingPublications(publishing: PublishingExtension) {
+    if (!pluginManager.hasPlugin("signing")) {
+        pluginManager.apply("signing")
+    }
+    //gpg --armor --export-secret-key 查看signingKey
+    //https://stackoverflow.com/questions/70929152/gradle-signing-plugin
+    extensions.getByType<SigningExtension>().apply {
+        val signingKey = System.getenv("SIGN_GPG_KEY")
+        val signingPassword = System.getenv("SIGN_GPG_PASSWORD")
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(publishing.publications["Spark"])
+    }
+}
+
+private fun LibraryExtension.androidLibPublishing(component: String = "release", withSource: Boolean = true) {
+    publishing {
+        singleVariant(component) {
+            if (withSource) {
+                withJavadocJar()
+                withSourcesJar()
+            }
+        }
+    }
+}
+
+private fun JavaPluginExtension.javaLibPublishing(component: String = "release", withSource: Boolean = true) {
+    if (withSource) {
+        withJavadocJar()
+        withSourcesJar()
+    }
+}
 
 //<editor-fold desc="maven-publish">
 fun Project.gitUrl(): String {
@@ -132,67 +152,13 @@ fun Project.gitUrl(): String {
     return remoteUrl
 }
 
-fun TaskContainer.registerJavadocJar(empty: Boolean = false) {
-    register<Jar>("javadocJar") {
-        archiveClassifier.set("javadoc")
-        if (!empty && findByName("javadoc") != null) {
-            //tasks.named("javadoc")任务生成javadoc,空的javadoc这里就不执行任务即可
-            from(named("javadoc"))
-        }
-    }
-}
-
-context(Project)
-fun TaskContainer.registerSourceJar(component: String, empty: Boolean = true) {
-    register<Jar>("sourceJar") {
-        archiveClassifier.set("sources")
-        if (!empty) {
-            try {
-                if (component == "java") {
-                    from(javaExtension!!.sourceSets["main"].allSource)
-                } else {
-                    //android-gradle-api中的LibraryExtension为com.android.build.api.dsl.LibraryExtension拿不到srcDirs
-                    //android-gradle中的LibraryExtension为com.android.build.gradle.LibraryExtension可以拿到sourceSet的srcDirs
-                    //所以android项目要打包源码的话需要手动添加sourceJar的task
-                    try {
-                        fun Any.getSrcDirs(): Any {
-                            //com.android.build.gradle.api.AndroidSourceDirectorySet.getSrcDirs
-                            val srcDirs = javaClass.getDeclaredField("srcDirs")
-                            return srcDirs.get(this)
-                        }
-                        androidLibExtension?.sourceSets?.getByName("main")?.java?.let {
-                            from(it.getSrcDirs())
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        println(
-                            """
-//android项目要打包sourceJar必须把下面代码添加到gradle中
-tasks.register<Jar>("sourceJar") {
-    from(android.sourceSets.getByName("main").java.srcDirs)
-    archiveClassifier.set("sources")
-}
-        """.red
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-}
-
-fun Project.publishJava5hmlA(libDescription: String): PublishingExtension {
-    return publish5hmlA(libDescription, "java")
-}
-
-fun Project.publish5hmlA(libDescription: String, component: String = "release", emptySourSets: Boolean = false): PublishingExtension {
+fun Project.publish5hmlA(libDescription: String, component: String = "release", withSource: Boolean = true): PublishingExtension {
     if (!pluginManager.hasPlugin("maven-publish")) {
         pluginManager.apply("maven-publish")
     }
-    tasks.registerJavadocJar()
-    tasks.registerSourceJar(component, emptySourSets)
+    //配置sources.jar 和 javadoc.jar, 上传到MavenCentral必备
+    androidLibExtension?.androidLibPublishing(component, withSource) ?: javaExtension?.javaLibPublishing(component, withSource)
+
     val gitUrl = gitUrl()
     val publishingExtension = extensions.getByType<PublishingExtension>()
     publishingExtension.apply {
@@ -228,7 +194,7 @@ fun Project.publish5hmlA(libDescription: String, component: String = "release", 
                         }
                         //from(components.getByName(component))
                         from(components[component])
-                        //下面的方式在pom中不会自动生成依赖
+                        //下面的方式在pom中【不会】自动生成依赖
                         //artifact(tasks.getByName("bundleDebugAar"))
                     }
                 }
@@ -236,10 +202,6 @@ fun Project.publish5hmlA(libDescription: String, component: String = "release", 
                 //afterEvaluate {
                 //    from(components.getByName("java"))
                 //}
-
-                //必须是jar所以要把javadoc打包成jar
-                artifact(tasks.named("javadocJar"))
-                artifact(tasks.named("sourceJar"))
 
                 pom {
                     description = libDescription

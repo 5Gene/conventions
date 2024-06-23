@@ -3,6 +3,7 @@ import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
+import org.gradle.api.internal.artifacts.dsl.dependencies.DependenciesExtensionModule.module
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.plugins.PluginManager
 import org.gradle.kotlin.dsl.DependencyHandlerScope
@@ -14,6 +15,7 @@ import wing.AndroidComponentsExtensions
 import wing.isAndroidLibrary
 import wing.kspSourceSets
 import wing.log
+import wing.property
 import wing.purple
 import wing.vWings
 
@@ -126,6 +128,8 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
 
     context(Project) override fun pluginConfigs(): PluginManager.() -> Unit = {
         super.pluginConfigs().invoke(this)
+//        println("xxxxxxxxxxxxxxxxxx ${buildscript.dependencies::class.qualifiedName}  ${buildscript.dependencies}")
+//        buildscript.dependencies.add("classpath", "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0")
         //<editor-fold desc="android project default plugin">
         //如果根build.gradle没在plugins中apply的话这里无法依赖，之后补充自动依赖
         apply("kotlin-android")
@@ -151,14 +155,14 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
         compileOptions {
             // Up to Java 11 APIs are available through desugaring
             // https://developer.android.com/studio/write/java11-minimal-support-table
-            if (project.hasProperty("config.project.java.version")) {
-                //配置 config.project.java.version=17 对应 JavaVersion.VERSION_17
-                val version = project.findProperty("config.project.java.version").toString().toInt()
-                val javaVersion = JavaVersion.values()[version - 1]
-                //17 --> 16
-                sourceCompatibility = javaVersion
-                targetCompatibility = javaVersion
-            }
+            //配置 config.project.java.version=17 对应 JavaVersion.VERSION_17
+            val version = project.property("config.project.java.version", 17)
+            val javaVersion = JavaVersion.values()[version - 1]
+            println("compileOptions -> javaVersion: ${javaVersion.name}")
+            //17 --> 16
+            sourceCompatibility = javaVersion
+            targetCompatibility = javaVersion
+
             encoding = "UTF-8"
             //isCoreLibraryDesugaringEnabled = true
         }
@@ -167,13 +171,14 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
 
     context(Project) override fun kotlinOptionsConfig(): KotlinJvmCompilerOptions.() -> Unit = {
         super.kotlinOptionsConfig().invoke(this)
-        if (project.hasProperty("config.project.java.version")) {
-            //配置 config.project.java.version=17 对应 JVM_17
-            val version = project.findProperty("config.project.java.version").toString().toInt()
-            //17 --> 9
-//            jvmTarget.set(JvmTarget.JVM_17)
-            jvmTarget.set(JvmTarget.values()[version - 8])
-        }
+        //配置 config.project.java.version=17 对应 JVM_17
+        val javaVersion = project.property("config.project.java.version", 17)
+        //17 --> 9
+        //jvmTarget.set(JvmTarget.JVM_17)
+        val jvmTargetVersion = JvmTarget.values()[javaVersion - 8]
+        println("KotlinJvmCompilerOptions -> javaVersion: ${jvmTargetVersion.name}")
+        jvmTarget.set(jvmTargetVersion)
+
         freeCompilerArgs.add("-Xcontext-receivers")
         //apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
