@@ -6,6 +6,8 @@
 
 ![](https://img.shields.io/badge/Android%20Gradle%20Plugin-8.3+-lightgreen.svg)
 
+[![Android CI](https://github.com/0DFJ/conventions/actions/workflows/android.yml/badge.svg)](https://github.com/0DFJ/conventions/actions/workflows/android.yml)
+
 # Summary
 Some plugins that simplify the configuration of gradle projects can improve the efficiency of gradle project configuration. Especially in multi-module projects, they can unify the consistency of each module and support the configuration of specific dependent versions. Modifications in one place will take effect globally.
 
