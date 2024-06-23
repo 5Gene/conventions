@@ -176,3 +176,7 @@ gradlePlugin {
 //    The URL to mirror is https://plugins.gradle.org/m2/
     "插件下载地址: https://plugins.gradle.org/m2/".print()
 }
+
+tasks.getByName("publishPlugins").doLast {
+    println("插件发布成功，点击🔗查看：https://plugins.gradle.org/")
+}
