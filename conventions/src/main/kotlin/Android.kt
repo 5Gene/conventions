@@ -151,8 +151,14 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
         compileOptions {
             // Up to Java 11 APIs are available through desugaring
             // https://developer.android.com/studio/write/java11-minimal-support-table
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
+            if (project.hasProperty("config.project.java.version")) {
+                //配置 config.project.java.version=17 对应 JavaVersion.VERSION_17
+                val version = project.findProperty("config.project.java.version").toString().toInt()
+                val javaVersion = JavaVersion.values()[version - 1]
+                //17 --> 16
+                sourceCompatibility = javaVersion
+                targetCompatibility = javaVersion
+            }
             encoding = "UTF-8"
             //isCoreLibraryDesugaringEnabled = true
         }
@@ -161,7 +167,13 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
 
     context(Project) override fun kotlinOptionsConfig(): KotlinJvmCompilerOptions.() -> Unit = {
         super.kotlinOptionsConfig().invoke(this)
-        jvmTarget.set(JvmTarget.JVM_17)
+        if (project.hasProperty("config.project.java.version")) {
+            //配置 config.project.java.version=17 对应 JVM_17
+            val version = project.findProperty("config.project.java.version").toString().toInt()
+            //17 --> 9
+//            jvmTarget.set(JvmTarget.JVM_17)
+            jvmTarget.set(JvmTarget.values()[version - 8])
+        }
         freeCompilerArgs.add("-Xcontext-receivers")
         //apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)

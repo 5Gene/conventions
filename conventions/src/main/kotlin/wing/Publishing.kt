@@ -144,27 +144,37 @@ fun TaskContainer.registerJavadocJar(empty: Boolean = false) {
 
 context(Project)
 fun TaskContainer.registerSourceJar(component: String, empty: Boolean = true) {
-    if (!empty && (component == "release" || component == "debug")) {
-        //android-gradle-api中的LibraryExtension为com.android.build.api.dsl.LibraryExtension拿不到srcDirs
-        //android-gradle中的LibraryExtension为com.android.build.gradle.LibraryExtension可以拿到sourceSet的srcDirs
-        //所以android项目要打包源码的话需要手动添加sourceJar的task
-        println(
-            """
-//android项目要打包sourceJar必须把下面代码添加到gradle中
-tasks.register<Jar>("sourceJar") {
-    from(android.sourceSets.getByName("main").java.srcDirs)
-    archiveClassifier.set("sources")
-}
-        """.red
-        )
-        return
-    }
     register<Jar>("sourceJar") {
         archiveClassifier.set("sources")
         if (!empty) {
             try {
                 if (component == "java") {
                     from(javaExtension!!.sourceSets["main"].allSource)
+                } else {
+                    //android-gradle-api中的LibraryExtension为com.android.build.api.dsl.LibraryExtension拿不到srcDirs
+                    //android-gradle中的LibraryExtension为com.android.build.gradle.LibraryExtension可以拿到sourceSet的srcDirs
+                    //所以android项目要打包源码的话需要手动添加sourceJar的task
+                    try {
+                        fun Any.getSrcDirs(): Any {
+                            //com.android.build.gradle.api.AndroidSourceDirectorySet.getSrcDirs
+                            val srcDirs = javaClass.getDeclaredField("srcDirs")
+                            return srcDirs.get(this)
+                        }
+                        androidLibExtension?.sourceSets?.getByName("main")?.java?.let {
+                            from(it.getSrcDirs())
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        println(
+                            """
+//android项目要打包sourceJar必须把下面代码添加到gradle中
+tasks.register<Jar>("sourceJar") {
+    from(android.sourceSets.getByName("main").java.srcDirs)
+    archiveClassifier.set("sources")
+}
+        """.red
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
