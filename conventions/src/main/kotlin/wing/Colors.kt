@@ -1,5 +1,7 @@
 package wing
 
+import org.gradle.api.Project
+
 //🎉 📣 🎗️ 🔥 📜 💯 📸 🎲 🚀 💡 🔔 ☃️ ✨ 🔪
 
 //以下是20种常见的颜色以及它们的 ANSI 转义码：
@@ -57,3 +59,9 @@ val String.bgCyan: String
     get() = "\u001B[46m${this}\u001B[0m"
 val String.bgBlack: String
     get() = "\u001B[40m${this}\u001B[0m"
+
+
+context(Project)
+fun String.print() {
+    println("\u001B[93m✨ $name >> ${this}\u001B[0m")
+}

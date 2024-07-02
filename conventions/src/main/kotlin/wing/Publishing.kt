@@ -17,6 +17,7 @@ import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.register
 import org.gradle.plugins.signing.SigningExtension
 import org.jetbrains.kotlin.com.google.gson.Gson
@@ -141,15 +142,15 @@ private fun JavaPluginExtension.javaLibPublishing(component: String = "release",
 }
 
 //<editor-fold desc="maven-publish">
-fun Project.gitUrl(): String {
+fun Project.url(): Lazy<String> = lazy {
     val stdout = ByteArrayOutputStream()
     exec {
         commandLine("git", "config", "--get", "remote.origin.url")
         standardOutput = stdout
     }
     val remoteUrl = stdout.toString().trim()
-    println("Remote URL: ${remoteUrl.removeSuffix(".git")}")
-    return remoteUrl
+    "Remote URL: ${remoteUrl.removeSuffix(".git")}".print()
+    remoteUrl
 }
 
 fun Project.publish5hmlA(libDescription: String, component: String = "release", withSource: Boolean = true): PublishingExtension {
@@ -159,7 +160,7 @@ fun Project.publish5hmlA(libDescription: String, component: String = "release", 
     //配置sources.jar 和 javadoc.jar, 上传到MavenCentral必备
     androidLibExtension?.androidLibPublishing(component, withSource) ?: javaExtension?.javaLibPublishing(component, withSource)
 
-    val gitUrl = gitUrl()
+    val gitUrl: String by url()
     val publishingExtension = extensions.getByType<PublishingExtension>()
     publishingExtension.apply {
         publications {

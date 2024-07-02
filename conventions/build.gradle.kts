@@ -62,6 +62,7 @@ dependencies {
 
     compileOnly(kotlin(module = "gradle-plugin", version = libs.versions.kotlin.get()))
     implementation("com.google.protobuf:protobuf-gradle-plugin:${libs.versions.protobuf.plugin.get()}")
+    implementation("com.gradle.publish:plugin-publish-plugin:1.2.1")
     testImplementation(libs.test.junit)
 //    compileOnly(gradleKotlinDsl())
     // help->dependencies只会输出implementation的库的依赖关系
@@ -75,24 +76,6 @@ dependencies {
 //group = "osp.sparkj.plugin"
 group = "io.github.5hmlA"
 version = wings.versions.conventions.get()
-
-publishing {
-    repositories {
-        maven {
-            name = "GithubPackages"
-            url = uri("https://maven.pkg.github.com/5hmlA/sparkj")
-            credentials {
-                username = System.getenv("GITHUB_USER")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-        maven {
-            //name会成为任务名字的一部分 publishOspPublicationTo [LocalRepo] Repository
-            name = "LocalRepo"
-            setUrl("${rootDir}/repo")
-        }
-    }
-}
 
 //插件推送之前 先去掉不符合规范的插件
 tasks.findByName("publishPlugins")?.doFirst {

@@ -6,13 +6,20 @@ plugins {
 
 buildscript {
     dependencies {
-        classpath("io.github.5hmlA:conventions:2.1.2")
+        classpath(wings.conventions)
     }
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_18
     targetCompatibility = JavaVersion.VERSION_18
+}
+
+sourceSets.main {
+    java.srcDirs(
+//        """$rootDir\surgery-doctor-tryfinally\src\main\java""",
+//        """$rootDir\surgery-doctor-arouter\src\main\java"""
+    )
 }
 
 publishMavenCentral("lib-java-test", "java")

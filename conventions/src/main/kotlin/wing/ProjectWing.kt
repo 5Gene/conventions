@@ -31,6 +31,7 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.getByType
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
 import kotlin.jvm.optionals.getOrNull
@@ -66,6 +67,9 @@ val Project.androidLibExtension
 
 val Project.javaExtension
     get(): JavaPluginExtension? = extensions.findByType(JavaPluginExtension::class.java)
+
+val Project.kotlinExtension
+    get(): KotlinJvmProjectExtension? = extensions.findByType(KotlinJvmProjectExtension::class.java)
 
 val Project.androidExtensionComponent
     get(): AndroidComponentsExtensions? = extensions.findByName("androidComponents") as? AndroidComponentsExtensions
@@ -122,12 +126,16 @@ fun Collection<*>.toStr(): String {
 }
 
 fun AndroidCommonExtension.kspSourceSets() {
+    srcDirs(
+        "build/generated/ksp/main/kotlin",
+        "build/generated/ksp/main/java"
+    )
+}
+
+fun AndroidCommonExtension.srcDirs(vararg srcDirs: Any) {
     sourceSets.getByName("main") {
         kotlin {
-            srcDirs(
-                "build/generated/ksp/main/kotlin",
-                "build/generated/ksp/main/java"
-            )
+            srcDirs(srcDirs)
         }
     }
 }

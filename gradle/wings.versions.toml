@@ -6,7 +6,7 @@ cubic = "2023.04.11"
 viewDsl = "2024.06.06"
 adapter = "2023.10.13"
 spark = "2023.12.08"
-conventions = "2.1.3"
+conventions = "2.1.3.3"
 auto-service = "0.0.7"
 surery = "2024.06.06"
 
