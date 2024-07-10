@@ -177,6 +177,6 @@ val String.lookDown: String
 val String.lookup: String
     get() = "👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆 $this 👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆"
 
-fun <T> Project.property(name: String, def: T): T {
-    return findProperty(name) as? T ?: def
+fun Project.property(name: String, def: Any): String {
+    return (findProperty(name) ?: def).toString()
 }

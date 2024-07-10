@@ -156,7 +156,7 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
             // Up to Java 11 APIs are available through desugaring
             // https://developer.android.com/studio/write/java11-minimal-support-table
             //配置 config.project.java.version=17 对应 JavaVersion.VERSION_17
-            val version = project.property("config.project.java.version", 17)
+            val version = project.property("config.project.java.version", 17).toInt()
             val javaVersion = JavaVersion.values()[version - 1]
             println("compileOptions -> javaVersion: ${javaVersion.name}")
             //17 --> 16
@@ -172,7 +172,7 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
     context(Project) override fun kotlinOptionsConfig(): KotlinJvmCompilerOptions.() -> Unit = {
         super.kotlinOptionsConfig().invoke(this)
         //配置 config.project.java.version=17 对应 JVM_17
-        val javaVersion = project.property("config.project.java.version", 17)
+        val javaVersion = project.property("config.project.java.version", 17).toInt()
         //17 --> 9
         //jvmTarget.set(JvmTarget.JVM_17)
         val jvmTargetVersion = JvmTarget.values()[javaVersion - 8]
