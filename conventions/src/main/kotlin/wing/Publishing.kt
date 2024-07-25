@@ -45,15 +45,13 @@ fun Task.showDependencies(action: ((Task) -> Unit)? = null) {
     }
 }
 
-fun Project.publishJava5hmlA(libDescription: String): PublishingExtension {
-    return publish5hmlA(libDescription, "java")
-}
-
 /**
  * - 1 配置publish
  * - 2 通过singing签名
  * - 3 签名后通过task上传
  */
+fun Project.publishJavaMavenCentral(libDescription: String) = publishMavenCentral(libDescription, "java")
+
 fun Project.publishMavenCentral(libDescription: String, component: String = "release") {
     val projectName = name
     //配置publish任务, 发布到MavenCentral必须要有sources.jar和javadoc.jar
@@ -134,8 +132,9 @@ private fun LibraryExtension.androidLibPublishing(component: String = "release",
     }
 }
 
-private fun JavaPluginExtension.javaLibPublishing(component: String = "release", withSource: Boolean = true) {
+private fun JavaPluginExtension.javaLibPublishing(component: String = "java", withSource: Boolean = true) {
     if (withSource) {
+        //kotlin找不到JavadocJar和SourcesJar任务
         withJavadocJar()
         withSourcesJar()
     }
@@ -151,6 +150,10 @@ fun Project.url(): Lazy<String> = lazy {
     val remoteUrl = stdout.toString().trim()
     "Remote URL: ${remoteUrl.removeSuffix(".git")}".print()
     remoteUrl
+}
+
+fun Project.publishJava5hmlA(libDescription: String): PublishingExtension {
+    return publish5hmlA(libDescription, "java")
 }
 
 fun Project.publish5hmlA(libDescription: String, component: String = "release", withSource: Boolean = true): PublishingExtension {

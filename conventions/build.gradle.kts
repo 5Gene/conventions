@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     `kotlin-dsl`
     //https://plugins.gradle.org/plugin/org.gradle.kotlin.kotlin-dsl
@@ -39,6 +41,7 @@ repositories {
 //For both the JVM and Android projects, it's possible to define options using the project Kotlin extension DSL:
 kotlin {
     compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
         freeCompilerArgs.add("-Xcontext-receivers")
         apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
