@@ -129,6 +129,13 @@ gradlePlugin {
             tags = listOf("android gradle plugin", "knife", "convention")
             implementationClass = "AGPKnifePlugin"
         }
+        register("ksp-dev") {
+            id = "${group}.dev.ksp"
+            displayName = "ksp-dev"
+            description = "Simplify for ksp develop"
+            tags = listOf("dev", "ksp", "convention")
+            implementationClass = "KSPDevConfig"
+        }
 
 //        因为xxx.gradle.kts注册插件的时候不会设置displayName 尝试这里覆盖注册，结果无效，
 //        publishTask里会检测所有的plugin,被认为是重复注册了直接报错,所以同一个plugin再创建个id

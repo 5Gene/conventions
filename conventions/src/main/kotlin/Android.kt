@@ -280,7 +280,7 @@ class AndroidRoom(pre: Android? = null) : BaseAndroid(pre) {
             add("implementation", it)
         }
         catalog.findLibrary("androidx-room-compiler").ifPresent {
-            add("annotationProcessor", it)
+//            add("annotationProcessor", it)
             // To use Kotlin Symbol Processing (KSP)
             add("ksp", it)
         }
