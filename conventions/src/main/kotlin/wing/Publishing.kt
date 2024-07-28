@@ -13,6 +13,8 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.AbstractCopyTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.TaskContainer
+import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.get
@@ -50,12 +52,14 @@ fun Task.showDependencies(action: ((Task) -> Unit)? = null) {
  * - 2 通过singing签名
  * - 3 签名后通过task上传
  */
-fun Project.publishJavaMavenCentral(libDescription: String) = publishMavenCentral(libDescription, "java")
+fun Project.publishJavaMavenCentral(libDescription: String, withSource: Boolean = false) = publishMavenCentral(libDescription, "java", withSource)
 
-fun Project.publishMavenCentral(libDescription: String, component: String = "release") {
+fun Project.publishKotlinMavenCentral(libDescription: String) = publishMavenCentral(libDescription, "kotlin", false)
+
+fun Project.publishMavenCentral(libDescription: String, component: String = "debug", withSource: Boolean = false) {
     val projectName = name
     //配置publish任务, 发布到MavenCentral必须要有sources.jar和javadoc.jar
-    val publishing = publish5hmlA(libDescription, component)
+    val publishing = publish5hmlA(libDescription, component, withSource)
 
     //配置签名
     signingPublications(publishing)
@@ -121,23 +125,34 @@ private fun Project.signingPublications(publishing: PublishingExtension) {
     }
 }
 
-private fun LibraryExtension.androidLibPublishing(component: String = "release", withSource: Boolean = true) {
+
+private fun TaskContainer.emptyJavadocJar() {
+    register<Jar>("javadocEmptyJar") {
+        //tasks.named("javadoc")任务生成javadoc,空的javadoc这里就不执行任务即可
+        from(named("javadoc"))
+        archiveClassifier.set("javadoc")
+    }
+}
+
+private fun TaskContainer.emptySourceJar() {
+    register<Jar>("sourcesEmptyJar") {
+        archiveClassifier.set("sources")
+    }
+}
+
+private fun LibraryExtension.androidLibPublishing(component: String = "release") {
     publishing {
         singleVariant(component) {
-            if (withSource) {
-                withJavadocJar()
-                withSourcesJar()
-            }
+            withJavadocJar()
+            withSourcesJar()
         }
     }
 }
 
-private fun JavaPluginExtension.javaLibPublishing(component: String = "java", withSource: Boolean = true) {
-    if (withSource) {
-        //kotlin找不到JavadocJar和SourcesJar任务
-        withJavadocJar()
-        withSourcesJar()
-    }
+private fun JavaPluginExtension.javaLibPublishing() {
+    //kotlin找不到JavadocJar和SourcesJar任务
+    withJavadocJar()
+    withSourcesJar()
 }
 
 //<editor-fold desc="maven-publish">
@@ -152,16 +167,21 @@ fun Project.url(): Lazy<String> = lazy {
     remoteUrl
 }
 
-fun Project.publishJava5hmlA(libDescription: String): PublishingExtension {
-    return publish5hmlA(libDescription, "java")
+fun Project.publishJava5hmlA(libDescription: String, withSource: Boolean = false): PublishingExtension {
+    return publish5hmlA(libDescription, "java", withSource)
 }
 
-fun Project.publish5hmlA(libDescription: String, component: String = "release", withSource: Boolean = true): PublishingExtension {
+fun Project.publish5hmlA(libDescription: String, component: String = "debug", withSource: Boolean = false): PublishingExtension {
     if (!pluginManager.hasPlugin("maven-publish")) {
         pluginManager.apply("maven-publish")
     }
-    //配置sources.jar 和 javadoc.jar, 上传到MavenCentral必备
-    androidLibExtension?.androidLibPublishing(component, withSource) ?: javaExtension?.javaLibPublishing(component, withSource)
+    if (withSource) {
+        //配置sources.jar 和 javadoc.jar, 上传到MavenCentral必备
+        androidLibExtension?.androidLibPublishing(component) ?: javaExtension?.javaLibPublishing()
+    } else {
+        tasks.emptySourceJar()
+        tasks.emptyJavadocJar()
+    }
 
     val gitUrl: String by url()
     val publishingExtension = extensions.getByType<PublishingExtension>()
@@ -202,6 +222,13 @@ fun Project.publish5hmlA(libDescription: String, component: String = "release", 
                         //artifact(tasks.getByName("bundleDebugAar"))
                     }
                 }
+
+                if (!withSource) {
+                    //必须是jar所以要把javadoc打包成jar
+                    artifact(tasks.named("javadocEmptyJar"))
+                    artifact(tasks.named("sourceEmptyJar"))
+                }
+
                 //下面配置会出现 Cannot publish module metadata because an artifact from the 'java' component has been removed
                 //afterEvaluate {
                 //    from(components.getByName("java"))
