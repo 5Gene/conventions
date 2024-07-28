@@ -23,6 +23,8 @@ import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.register
 import org.gradle.plugins.signing.SigningExtension
 import org.jetbrains.kotlin.com.google.gson.Gson
+import org.jetbrains.kotlin.gradle.plugin.KotlinApiPlugin
+import org.jetbrains.kotlin.gradle.plugin.KotlinGradlePluginExtensionPoint
 import post
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -55,6 +57,8 @@ fun Task.showDependencies(action: ((Task) -> Unit)? = null) {
 fun Project.publishJavaMavenCentral(libDescription: String, withSource: Boolean = false) = publishMavenCentral(libDescription, "java", withSource)
 
 fun Project.publishKotlinMavenCentral(libDescription: String) = publishMavenCentral(libDescription, "kotlin", false)
+
+fun Project.publishAndroidMavenCentral(libDescription: String) = publishMavenCentral(libDescription, "debug", false)
 
 fun Project.publishMavenCentral(libDescription: String, component: String = "debug", withSource: Boolean = false) {
     val projectName = name
@@ -128,8 +132,7 @@ private fun Project.signingPublications(publishing: PublishingExtension) {
 
 private fun TaskContainer.emptyJavadocJar() {
     register<Jar>("javadocEmptyJar") {
-        //tasks.named("javadoc")任务生成javadoc,空的javadoc这里就不执行任务即可
-        from(named("javadoc"))
+//        from(named("javadoc"))//任务生成javadoc,空的javadoc这里就不执行任务即可
         archiveClassifier.set("javadoc")
     }
 }
@@ -172,6 +175,7 @@ fun Project.publishJava5hmlA(libDescription: String, withSource: Boolean = false
 }
 
 fun Project.publish5hmlA(libDescription: String, component: String = "debug", withSource: Boolean = false): PublishingExtension {
+    val projectName = name
     if (!pluginManager.hasPlugin("maven-publish")) {
         pluginManager.apply("maven-publish")
     }
@@ -179,10 +183,17 @@ fun Project.publish5hmlA(libDescription: String, component: String = "debug", wi
         //配置sources.jar 和 javadoc.jar, 上传到MavenCentral必备
         androidLibExtension?.androidLibPublishing(component) ?: javaExtension?.javaLibPublishing()
     } else {
+        afterEvaluate {
+            tasks.findByName("${component}SourcesJar")?.let {
+                println("【$projectName】android中默认会执行${component}SourcesJar，不打包源码的时候需要手动去掉")
+//                it.setOnlyIf { false }//可以跳过任务执行，但是任务还是在，generateMetadataFileForSparkPublication执行的时候还是会用到
+//                it.didWork = false//无效不能跳过任务
+                it.enabled = false
+            }
+        }
         tasks.emptySourceJar()
         tasks.emptyJavadocJar()
     }
-
     val gitUrl: String by url()
     val publishingExtension = extensions.getByType<PublishingExtension>()
     publishingExtension.apply {
@@ -208,13 +219,13 @@ fun Project.publish5hmlA(libDescription: String, component: String = "debug", wi
                 val foundComponent = components.any { it.name == component }
                 if (foundComponent) {
                     components.forEach {
-                        println("components-> ${it.name}")
+                        println("【$projectName】components-> ${it.name}")
                     }
                     from(components[component])
                 } else {
                     afterEvaluate {
                         components.forEach {
-                            println("afterEvaluate-> components-> ${it.name}")
+                            println("【$projectName】afterEvaluate-> components-> ${it.name}")
                         }
                         //from(components.getByName(component))
                         from(components[component])
@@ -224,9 +235,10 @@ fun Project.publish5hmlA(libDescription: String, component: String = "debug", wi
                 }
 
                 if (!withSource) {
+                    println("【$projectName】publish whit no source jar".green)
                     //必须是jar所以要把javadoc打包成jar
                     artifact(tasks.named("javadocEmptyJar"))
-                    artifact(tasks.named("sourceEmptyJar"))
+                    artifact(tasks.named("sourcesEmptyJar"))
                 }
 
                 //下面配置会出现 Cannot publish module metadata because an artifact from the 'java' component has been removed

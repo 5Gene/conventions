@@ -1,4 +1,5 @@
 import wing.publish5hmlA
+import wing.publishMavenCentral
 
 plugins {
     alias(libs.plugins.android.library) apply true
@@ -43,5 +44,7 @@ android {
     }
 }
 
+//publish5hmlA("test", withSource = true)
 publish5hmlA("test")
+//publishMavenCentral("test", "debug", true)
 //publishMavenCentral("test")

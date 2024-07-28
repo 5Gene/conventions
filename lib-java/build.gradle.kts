@@ -1,3 +1,6 @@
+import wing.publish5hmlA
+import wing.publishJavaMavenCentral
+import wing.publishKotlinMavenCentral
 import wing.publishMavenCentral
 
 plugins {
@@ -10,10 +13,10 @@ buildscript {
     }
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_18
-    targetCompatibility = JavaVersion.VERSION_18
-}
+//java {
+//    sourceCompatibility = JavaVersion.VERSION_17
+//    targetCompatibility = JavaVersion.VERSION_17
+//}
 
 sourceSets.main {
     java.srcDirs(
@@ -22,4 +25,6 @@ sourceSets.main {
     )
 }
 
-publishMavenCentral("lib-java-test", "java")
+//publishKotlinMavenCentral("lib-java-test")
+publish5hmlA("test", "kotlin", false)
+//publishJavaMavenCentral("lib-java-test", true)

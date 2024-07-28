@@ -10,7 +10,7 @@ surery = "2024.06.06"
 conventions = "2.1.7"
 auto-service = "0.0.8"
 view-dsl = "0.0.1"
-ksp-poe = "0.0.1"
+ksp-poe = "0.0.2"
 
 [libraries]
 auto-service = { module = "io.github.5hmla:auto-service", version.ref = "auto-service" }
