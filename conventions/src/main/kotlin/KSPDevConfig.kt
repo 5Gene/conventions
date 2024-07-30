@@ -1,5 +1,6 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.findByType
@@ -24,13 +25,16 @@ class KSPDevConfig : Plugin<Project> {
 
             dependencies {
                 val libs = extensions.findByType<VersionCatalogsExtension>()?.named("libs")
-                val auto_service = libs?.findVersion("auto-service")?.getOrNull()?.toString() ?: "0.0.8"
+                val wings = extensions.findByType<VersionCatalogsExtension>()?.named("wings")
+                val auto_service = wings?.findVersionStr("auto-service") ?: libs?.findVersionStr("auto-service") ?: "0.0.8"
                 add("ksp", "io.github.5hmla:auto-service:$auto_service")
 
-                val ksp_poe = libs?.findVersion("ksp-poe")?.getOrNull()?.toString() ?: "0.0.2"
+                val ksp_poe = wings?.findVersionStr("ksp-poe") ?: libs?.findVersionStr("ksp-poe") ?: "0.0.3"
                 add("implementation", "io.github.5gene:ksp-poe:$ksp_poe")
             }
             log("=========================== START【${this@KSPDevConfig}】 =========================")
         }
     }
 }
+
+fun VersionCatalog?.findVersionStr(alias: String) = this?.findVersion(alias)?.getOrNull()?.toString()
