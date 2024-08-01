@@ -14,6 +14,7 @@ fun Project.gradlePluginSet(action: Action<in NamedDomainObjectContainer<PluginD
 
     if (!pluginManager.hasPlugin("com.gradle.plugin-publish")) {
         pluginManager.apply("com.gradle.plugin-publish")
+        pluginManager.apply("maven-publish")
     }
 
     //For both the JVM and Android projects, it's possible to define options using the project Kotlin extension DSL:
@@ -67,6 +68,6 @@ fun Project.gradlePluginSet(action: Action<in NamedDomainObjectContainer<PluginD
         "插件地址: https://plugins.gradle.org/u/ZuYun".print()
         //    https://plugins.gradle.org/docs/mirroring
         //    The URL to mirror is https://plugins.gradle.org/m2/
-        "插件下载地址: https://plugins.gradle.org/m2/".print()
+        "插件下载地址: https://plugins.gradle.org/m2/io/github/5hmlA/".print()
     }
 }

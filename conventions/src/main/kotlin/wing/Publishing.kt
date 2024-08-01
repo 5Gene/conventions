@@ -17,6 +17,7 @@ import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.provideDelegate
@@ -190,6 +191,8 @@ fun Project.publish5hmlA(libDescription: String, component: String = "debug", wi
 //                it.didWork = false//无效不能跳过任务
                 it.enabled = false
             }
+            //把已有的sourcesJar任务排查所有内容
+            (tasks.findByName("sourcesJar") as? Jar)?.exclude("**/*")
         }
         tasks.emptySourceJar()
         tasks.emptyJavadocJar()

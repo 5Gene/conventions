@@ -30,7 +30,9 @@ import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
@@ -189,4 +191,28 @@ val String.lookup: String
 
 fun Project.property(name: String, def: Any): String {
     return (findProperty(name) ?: def).toString()
+}
+
+/**
+ * 把已有的sourcesJar任务修改为不打包任何内容
+ */
+fun Project.sourceJarEmpty() {
+    afterEvaluate {
+        //把已有的sourcesJar任务排查所有内容
+        tasks.named<Jar>("sourcesJar") {
+            exclude("**/*")
+        }
+    }
+}
+
+/**
+ * 任务添加的时候打印日志
+ */
+fun Project.logTasks() {
+    tasks.whenTaskAdded {
+        println("whenTaskAdded -> $name > ${this::class.simpleName}.class ")
+        dependsOn.forEach {
+            println(it)
+        }
+    }
 }

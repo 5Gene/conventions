@@ -29,7 +29,7 @@ class KSPDevConfig : Plugin<Project> {
                 val auto_service = wings?.findVersionStr("auto-service") ?: libs?.findVersionStr("auto-service") ?: "0.0.8"
                 add("ksp", "io.github.5hmla:auto-service:$auto_service")
 
-                val ksp_poe = wings?.findVersionStr("ksp-poe") ?: libs?.findVersionStr("ksp-poe") ?: "0.0.3"
+                val ksp_poe = wings?.findVersionStr("ksp-poe") ?: libs?.findVersionStr("ksp-poe") ?: "0.0.4"
                 add("implementation", "io.github.5gene:ksp-poe:$ksp_poe")
             }
             log("=========================== START【${this@KSPDevConfig}】 =========================")
