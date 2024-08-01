@@ -10,7 +10,10 @@ import org.gradle.kotlin.dsl.kotlin
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugin.devel.PluginDeclaration
 
-fun Project.gradlePluginSet(action: Action<in NamedDomainObjectContainer<PluginDeclaration>>) {
+fun Project.gradlePluginSet(emptySource: Boolean = true, action: Action<in NamedDomainObjectContainer<PluginDeclaration>>) {
+    if (emptySource) {
+        sourceJarEmpty()
+    }
 
     if (!pluginManager.hasPlugin("com.gradle.plugin-publish")) {
         pluginManager.apply("com.gradle.plugin-publish")
