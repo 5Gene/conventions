@@ -41,7 +41,6 @@ import kotlin.jvm.optionals.getOrNull
 
 fun Project.log(msg: String) {
     //🎉 📣 🎗️ 🔥 📜 💯 📸 🎲 🚀 💡 🔔 🔪 🐼 ✨
-
     //    println("🎗️ $name >>> $msg".yellow)
     println("🔪 $name--> tid:${Thread.currentThread().id} $msg".yellow)
 }

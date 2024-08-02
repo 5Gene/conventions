@@ -7,6 +7,7 @@ import java.net.URL
 const val formDataLineEnd = "\r\n"
 
 fun String.asAuthorizationHeader() = mutableMapOf("Authorization" to this)
+
 fun File.asMultipart(key: String): MultipartFileBody = MultipartFileBody(key, this)
 
 
