@@ -3,15 +3,17 @@ import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
-import org.gradle.api.internal.artifacts.dsl.dependencies.DependenciesExtensionModule.module
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.plugins.PluginManager
 import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.buildscript
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.repositories
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import wing.AndroidCommonExtension
 import wing.AndroidComponentsExtensions
+import wing.findVersionStr
 import wing.isAndroidLibrary
 import wing.kspSourceSets
 import wing.log
@@ -31,7 +33,7 @@ interface Android {
      *     }
      * ```
      */
-    context(Project) fun pluginConfigs(): PluginManager.() -> Unit
+    context(Project) fun pluginConfigs(): PluginManager.(VersionCatalog) -> Unit
 
     /**
      * ```kotlin
@@ -75,9 +77,9 @@ open class BaseAndroid(val android: Android? = null) : Android {
      *     }
      * ```
      */
-    context(Project) override fun pluginConfigs(): PluginManager.() -> Unit = {
+    context(Project) override fun pluginConfigs(): PluginManager.(VersionCatalog) -> Unit = {
         log("pluginConfigs()  ${this@BaseAndroid}".purple)
-        android?.pluginConfigs()?.invoke(this)
+        android?.pluginConfigs()?.invoke(this, it)
     }
 
     /**
@@ -126,10 +128,22 @@ open class BaseAndroid(val android: Android? = null) : Android {
 
 class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
 
-    context(Project) override fun pluginConfigs(): PluginManager.() -> Unit = {
-        super.pluginConfigs().invoke(this)
+    context(Project) override fun pluginConfigs(): PluginManager.(VersionCatalog) -> Unit = {
+        super.pluginConfigs().invoke(this, it)
 //        println("xxxxxxxxxxxxxxxxxx ${buildscript.dependencies::class.qualifiedName}  ${buildscript.dependencies}")
 //        buildscript.dependencies.add("classpath", "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0")
+        val ktVersion = it.findVersionStr("kotlin") ?: "2.0.0"
+        buildscript {
+            repositories {
+                maven {
+                    url = uri("https://plugins.gradle.org/m2/")
+                }
+            }
+            dependencies {
+                //
+                classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$ktVersion")
+            }
+        }
         //<editor-fold desc="android project default plugin">
         //如果根build.gradle没在plugins中apply的话这里无法依赖，之后补充自动依赖
         apply("kotlin-android")
@@ -249,8 +263,19 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
 class AndroidRoom(pre: Android? = null) : BaseAndroid(pre) {
     private fun Project.ksp(config: KspExtension.() -> Unit) = extensions.getByType<KspExtension>().config()
     private fun Project.room(config: RoomExtension.() -> Unit) = extensions.getByType<RoomExtension>().config()
-    context(Project) override fun pluginConfigs(): PluginManager.() -> Unit = {
-        super.pluginConfigs().invoke(this)
+    context(Project) override fun pluginConfigs(): PluginManager.(VersionCatalog) -> Unit = {
+        super.pluginConfigs().invoke(this, it)
+//        buildscript {
+//            repositories {
+//                gradlePluginPortal()
+//                mavenCentral()
+//                maven {
+//                    url = uri("https://plugins.gradle.org/m2/")
+//                }
+//            }
+//            dependencies {
+//            }
+//        }
         apply("androidx.room")
         apply("com.google.devtools.ksp")
         //https://kotlinlang.org/docs/ksp-quickstart.html#create-a-processor-of-your-own

@@ -4,9 +4,11 @@ import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.buildscript
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.kotlin
+import org.gradle.kotlin.dsl.repositories
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugin.devel.PluginDeclaration
 
@@ -16,6 +18,16 @@ fun Project.gradlePluginSet(emptySource: Boolean = true, action: Action<in Named
     }
 
     if (!pluginManager.hasPlugin("com.gradle.plugin-publish")) {
+        buildscript {
+            repositories {
+                maven {
+                    url = uri("https://plugins.gradle.org/m2/")
+                }
+            }
+            dependencies {
+                classpath("com.gradle.publish:plugin-publish-plugin:1.2.1")
+            }
+        }
         pluginManager.apply("com.gradle.plugin-publish")
         pluginManager.apply("maven-publish")
     }

@@ -215,3 +215,8 @@ fun Project.logTasks() {
         }
     }
 }
+
+
+fun VersionCatalog?.findVersionStr(alias: String) = this?.findVersion(alias)?.getOrNull()?.toString()
+
+fun VersionCatalog.getVersion(alias: String) = findVersion(alias).get().requiredVersion

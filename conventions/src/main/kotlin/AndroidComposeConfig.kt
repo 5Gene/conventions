@@ -9,8 +9,8 @@ import wing.AndroidCommonExtension
 
 class AndroidComposeConfig : AndroidConfig() {
 
-    context(Project) override fun pluginConfigs(): PluginManager.() -> Unit = {
-        super.pluginConfigs()(this)
+    context(Project) override fun pluginConfigs(): PluginManager.(VersionCatalog) -> Unit = {
+        super.pluginConfigs()(this, it)
         //https://developer.android.google.cn/develop/ui/compose/compiler?hl=zh-cn
         apply("org.jetbrains.kotlin.plugin.compose")
 

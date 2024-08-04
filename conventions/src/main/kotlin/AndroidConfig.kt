@@ -26,8 +26,8 @@ open class AndroidConfig : AbsAndroidConfig() {
         repoConfig()
     }
 
-    context(Project) override fun pluginConfigs(): PluginManager.() -> Unit = {
-        androidConfig?.pluginConfigs()?.invoke(this)
+    context(Project) override fun pluginConfigs(): PluginManager.(VersionCatalog) -> Unit = {
+        androidConfig?.pluginConfigs()?.invoke(this, it)
     }
 
 

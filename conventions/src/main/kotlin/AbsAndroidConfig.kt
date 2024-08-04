@@ -47,7 +47,7 @@ open class AbsAndroidConfig : Plugin<Project> {
      * ```
      */
     context(Project)
-    open fun pluginConfigs(): PluginManager.() -> Unit = {}
+    open fun pluginConfigs(): PluginManager.(VersionCatalog) -> Unit = {}
 
     /**
      * ```kotlin
@@ -93,10 +93,10 @@ open class AbsAndroidConfig : Plugin<Project> {
                 log("常见构建自定义的即用配方，展示如何使用Android Gradle插件的公共API和DSL:")
                 log("https://github.com/android/gradle-recipes")
                 onProject()
-                with(pluginManager) {
-                    pluginConfigs()()
-                }
                 val catalog = vlibs
+                with(pluginManager) {
+                    pluginConfigs()(catalog)
+                }
                 androidExtensionComponent?.apply {
                     finalizeDsl { android ->
                         with(android) {
