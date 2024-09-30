@@ -83,7 +83,7 @@ workRuntimeKtx = "2.9.0"
 protobuf = "4.26.1"
 protobuf-plugin = "0.9.4"
 auto-service = "1.1.1"
-activity = "1.8.0"
+activity = "1.9.0"
 
 [libraries]
 google-auto-service-anno = { module = "com.google.auto.service:auto-service-annotations", version.ref = "auto-service" }

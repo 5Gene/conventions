@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     `kotlin-dsl`
     //https://plugins.gradle.org/plugin/org.gradle.kotlin.kotlin-dsl
@@ -41,7 +39,7 @@ repositories {
 //For both the JVM and Android projects, it's possible to define options using the project Kotlin extension DSL:
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
+//        jvmTarget.set(JvmTarget.JVM_17)
         freeCompilerArgs.add("-Xcontext-receivers")
         apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
@@ -78,7 +76,8 @@ dependencies {
 
 //group = "osp.sparkj.plugin"
 group = "io.github.5hmlA"
-version = wings.versions.conventions.get()
+//version = wings.versions.conventions.get()
+version = "2.1.9"
 
 //插件推送之前 先去掉不符合规范的插件
 tasks.findByName("publishPlugins")?.doFirst {

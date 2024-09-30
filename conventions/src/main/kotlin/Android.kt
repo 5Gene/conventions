@@ -19,7 +19,6 @@ import wing.kspSourceSets
 import wing.log
 import wing.property
 import wing.purple
-import wing.vWings
 
 interface Android {
 
@@ -202,7 +201,7 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
         super.dependenciesConfig().invoke(this, catalog)
         val androidLibrary = project.isAndroidLibrary
         //library默认不添加依赖,除非配置了config.android.dependencies.force=true
-        if (!androidLibrary or project.hasProperty("config.android.dependencies.force")) {
+        if (project.hasProperty("config.android.dependencies.auto") and (!androidLibrary or project.hasProperty("config.android.dependencies.force"))) {
             //<editor-fold desc="android project default dependencies">
             catalog.findLibrary("koin-bom").ifPresent { koinBom ->
                 catalog.findBundle("koin").ifPresent {
@@ -251,7 +250,7 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
                 //包括 androidx-test-ext-junit , androidx-test-espresso-core
                 add("androidTestImplementation", androidxBenchmark)
             }
-            project.vWings?.findBundle("sparkj")?.ifPresent { sparkj ->
+            catalog.findBundle("gene.sparkj").ifPresent { sparkj ->
                 project.log("implementation(sparkj)")
                 add("implementation", sparkj)
             }

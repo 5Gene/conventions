@@ -1,7 +1,4 @@
 import wing.publish5hmlA
-import wing.publishJavaMavenCentral
-import wing.publishKotlinMavenCentral
-import wing.publishMavenCentral
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -9,7 +6,7 @@ plugins {
 
 buildscript {
     dependencies {
-        classpath(wings.conventions)
+        classpath(wings.gene.conventions)
     }
 }
 

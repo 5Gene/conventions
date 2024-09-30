@@ -48,9 +48,6 @@ fun Project.log(msg: String) {
 internal val Project.vlibs
     get(): VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
-internal val Project.vWings
-    get(): VersionCatalog? = extensions.getByType<VersionCatalogsExtension>().find("wings").getOrNull()
-
 //要兼容 application和library 这里的泛型必须 用*全匹配
 typealias AndroidCommonExtension = CommonExtension<*, *, *, *, *, *>
 
