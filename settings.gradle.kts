@@ -48,5 +48,5 @@ allGradleProject.forEachIndexed { index, path ->
 
 
 //include(":app")
-include(":lib-test")
-include(":lib-java")
+//include(":lib-test")
+//include(":lib-java")
