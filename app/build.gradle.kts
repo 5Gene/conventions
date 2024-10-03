@@ -74,7 +74,7 @@ android {
     }
 }
 
-//dependencies {
-//    implementation(libs.bundles.android.view)
+dependencies {
+    implementation(vcl.google.material)
 //    implementation(project(":lib-test"))
-//}
+}
