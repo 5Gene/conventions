@@ -12,10 +12,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("libs") {
-            from(files("../gradle/libs.versions.toml"))
-        }
-        create("wings") {
-            from(files("../gradle/wings.versions.toml"))
+            from("io.github.5hmla:vcatalog:24.09.29")
         }
     }
 }

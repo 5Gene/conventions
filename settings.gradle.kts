@@ -14,7 +14,6 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("wings") {
             from("io.github.5hmla:vcatalog:24.09.29")
-//            from(files("gradle/wings.versions.toml"))
         }
     }
     repositories {
