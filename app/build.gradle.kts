@@ -77,5 +77,6 @@ android {
 dependencies {
     implementation(vcl.google.material)
     implementation(vcl.bundles.android.project)
+    implementation(vcl.bundles.android.view)
 //    implementation(project(":lib-test"))
 }
