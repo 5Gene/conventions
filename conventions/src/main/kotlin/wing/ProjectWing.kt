@@ -24,7 +24,6 @@ import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.dsl.VariantDimension
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
-import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
@@ -46,7 +45,7 @@ fun Project.log(msg: String) {
 }
 
 internal val Project.vlibs
-    get(): VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
+    get(): VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("vcl")
 
 //要兼容 application和library 这里的泛型必须 用*全匹配
 typealias AndroidCommonExtension = CommonExtension<*, *, *, *, *, *>
@@ -80,9 +79,6 @@ val Project.isAndroidApp
 
 val Project.isAndroidLibrary
     get(): Boolean = androidExtension is LibraryExtension
-
-val Project.isAndroidLib
-    get(): Boolean = androidExtensionComponent is LibraryAndroidComponentsExtension
 
 fun VariantDimension.defineStr(name: String, value: String) {
     buildConfigField("String", name, "\"$value\"")

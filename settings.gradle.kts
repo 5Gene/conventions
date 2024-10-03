@@ -48,6 +48,6 @@ allGradleProject.forEachIndexed { index, path ->
 //includeBuild(allGradleProject[0].absolutePathString()) { name = "conventions" }
 
 
-include(":app")
+//include(":app")
 include(":lib-test")
 include(":lib-java")

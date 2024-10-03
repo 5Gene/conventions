@@ -11,14 +11,7 @@ import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.repositories
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
-import wing.AndroidCommonExtension
-import wing.AndroidComponentsExtensions
-import wing.findVersionStr
-import wing.isAndroidLibrary
-import wing.kspSourceSets
-import wing.log
-import wing.property
-import wing.purple
+import wing.*
 
 interface Android {
 
@@ -199,50 +192,7 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
 
     context(Project) override fun dependenciesConfig(): DependencyHandlerScope.(VersionCatalog) -> Unit = { catalog ->
         super.dependenciesConfig().invoke(this, catalog)
-        val androidLibrary = project.isAndroidLibrary
-        //library默认不添加依赖,除非配置了config.android.dependencies.force=true
-        if (project.hasProperty("config.android.dependencies.auto") and (!androidLibrary or project.hasProperty("config.android.dependencies.force"))) {
-            //<editor-fold desc="android project default dependencies">
-            catalog.findLibrary("koin-bom").ifPresent { koinBom ->
-                catalog.findBundle("koin").ifPresent {
-                    project.log("implementation(koin)")
-                    add("implementation", platform(koinBom))
-                    add("implementation", it)
-                }
-            }
-
-            catalog.findLibrary("okhttp-bom").ifPresent { okhttpBom ->
-                catalog.findBundle("okhttp").ifPresent {
-                    project.log("implementation(okhttp-bom)")
-                    add("implementation", platform(okhttpBom))
-                    add("implementation", it)
-                }
-            }
-
-            catalog.findBundle("android-project").ifPresentOrElse({ androidProject ->
-                project.log("implementation(android-project)")
-                add("implementation", androidProject)
-            }) {
-                if (!androidLibrary) {
-                    project.log("implementation(androidx...appcompat)")
-                    add("implementation", catalog.findLibrary("androidx-navigation-ui-ktx").get())
-                    add("implementation", catalog.findLibrary("androidx-navigation-fragment-ktx").get())
-                    add("implementation", catalog.findLibrary("lifecycle-livedata-ktx").get())
-                    add("implementation", catalog.findLibrary("lifecycle-viewmodel-ktx").get())
-                    add("implementation", catalog.findLibrary("google-material").get())
-                    add("implementation", catalog.findLibrary("androidx-appcompat").get())
-                    add("implementation", catalog.findLibrary("androidx-core-ktx").get())
-                    add("implementation", catalog.findLibrary("androidx-constraintlayout").get())
-                }
-            }
-            //catalog.findBundle("android-view").ifPresent { views ->
-            //    log("implementation(android-view)")
-            //    add("implementation", views)
-            //}
-            catalog.findBundle("ktor").ifPresent { ktor ->
-                project.log("implementation(ktor)")
-                add("implementation", ktor)
-            }
+        if (project.isAndroidApp) {
             catalog.findLibrary("test-junit").ifPresent { jUnit ->
                 add("testImplementation", jUnit)
             }
@@ -250,11 +200,19 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
                 //包括 androidx-test-ext-junit , androidx-test-espresso-core
                 add("androidTestImplementation", androidxBenchmark)
             }
-            catalog.findBundle("gene.sparkj").ifPresent { sparkj ->
-                project.log("implementation(sparkj)")
-                add("implementation", sparkj)
-            }
-            //</editor-fold>
+            catalog.findBundle("android-basic").ifPresent({ androidBasic ->
+                project.log("implementation(android-basic)")
+                add("implementation", androidBasic)
+            })
+            catalog.findBundle("android-view").ifPresent({ androidView ->
+                project.log("implementation(android-view)")
+                add("implementation", androidView)
+            })
+        } else if (project.isAndroidLibrary) {
+            catalog.findBundle("android-basic").ifPresent({ androidBasic ->
+                project.log("implementation(android-basic)")
+                add("implementation", androidBasic)
+            })
         }
     }
 }

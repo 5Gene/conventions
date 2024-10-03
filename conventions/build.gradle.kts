@@ -77,7 +77,7 @@ dependencies {
 //group = "osp.sparkj.plugin"
 group = "io.github.5hmlA"
 //version = wings.versions.conventions.get()
-version = "2.1.9"
+version = "2.1.10"
 
 //插件推送之前 先去掉不符合规范的插件
 tasks.findByName("publishPlugins")?.doFirst {

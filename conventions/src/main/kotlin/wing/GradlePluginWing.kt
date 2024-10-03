@@ -3,12 +3,7 @@ package wing
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.assign
-import org.gradle.kotlin.dsl.buildscript
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.repositories
+import org.gradle.kotlin.dsl.*
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugin.devel.PluginDeclaration
 
@@ -35,7 +30,7 @@ fun Project.gradlePluginSet(emptySource: Boolean = true, action: Action<in Named
     //For both the JVM and Android projects, it's possible to define options using the project Kotlin extension DSL:
     kotlinExtension?.apply {
         compilerOptions {
-            freeCompilerArgs.add("-Xcontext-receivers")
+//            freeCompilerArgs.add("-Xcontext-receivers")
             apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
             languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         }
@@ -74,7 +69,6 @@ fun Project.gradlePluginSet(emptySource: Boolean = true, action: Action<in Named
         plugins.forEach {
             "- plugin -- ${it.name} ${it.id} ${it.displayName}".print()
         }
-
     }
 
     tasks.getByName("publishPlugins").doLast {
