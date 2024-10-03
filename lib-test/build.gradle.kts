@@ -1,11 +1,10 @@
 import wing.publish5hmlA
-import wing.publishMavenCentral
 
 plugins {
-    alias(libs.plugins.android.library) apply true
-    alias(libs.plugins.kotlin.android) apply false
-    alias(libs.plugins.room) apply false
-    alias(libs.plugins.ksp) apply false
+    alias(vcl.plugins.android.library) apply true
+    alias(vcl.plugins.kotlin.android) apply false
+    alias(vcl.plugins.room) apply false
+    alias(vcl.plugins.ksp) apply false
     id("io.github.5hmlA.android")
     id("io.github.5hmlA.knife")
 }
@@ -14,16 +13,18 @@ knife {
     println("--knife ->------- build config")
     onVariants {
         println("--knife ->------- build config $it")
-//        if (it.name.contains("debug")) {
-//            onArtifactBuilt {
-//                copy {
-//                    //copy apk to rootDir
-//                    from(it)
-//                    //into a directory
-//                    into(rootDir.absolutePath)
-//                }
-//            }
-//        }
+        if (it.name.contains("debug")) {
+            utility {
+                onArtifactBuilt {
+                    copy {
+                        //copy apk to rootDir
+                        from(it)
+                        //into a directory
+                        into(rootDir.absolutePath)
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -5,6 +5,11 @@ pluginManagement {
         mavenCentral()
     }
 }
+
+plugins {
+    id("io.github.5hmlA.vcl") version "24.10.01"
+}
+
 dependencyResolutionManagement {
     repositories {
         google()

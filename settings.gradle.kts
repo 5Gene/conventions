@@ -10,6 +10,11 @@ pluginManagement {
         mavenCentral()
     }
 }
+
+plugins {
+    id("io.github.5hmlA.vcl") version "24.10.01"
+}
+
 dependencyResolutionManagement {
     versionCatalogs {
         create("wings") {
@@ -47,6 +52,6 @@ allGradleProject.forEachIndexed { index, path ->
 //includeBuild(allGradleProject[0].absolutePathString()) { name = "conventions" }
 
 
-//include(":app")
-//include(":lib-test")
-//include(":lib-java")
+include(":app")
+include(":lib-test")
+include(":lib-java")

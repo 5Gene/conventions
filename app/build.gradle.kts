@@ -1,11 +1,11 @@
 plugins {
     //之所以要[apply true]是因为没在顶层build.gradle中apply所以这里需要
-    alias(libs.plugins.android.application) apply true
-    alias(libs.plugins.kotlin.android) apply false
+    alias(vcl.plugins.android.application) apply true
+    alias(vcl.plugins.kotlin.android) apply false
 //    alias(libs.plugins.hilt) apply false
-    alias(libs.plugins.ksp) apply false
-    alias(libs.plugins.room) apply false
-    alias(libs.plugins.compose.compiler) apply false
+    alias(vcl.plugins.ksp) apply false
+    alias(vcl.plugins.room) apply false
+    alias(vcl.plugins.compose.compiler) apply false
     id("io.github.5hmlA.android.compose")
 //    id("io.github.5hmlA.android")
     id("io.github.5hmlA.protobuf")

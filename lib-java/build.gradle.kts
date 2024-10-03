@@ -1,12 +1,12 @@
 import wing.publish5hmlA
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    alias(vcl.plugins.kotlin.jvm)
 }
 
 buildscript {
     dependencies {
-        classpath(wings.gene.conventions)
+        classpath(vcl.gene.conventions)
     }
 }
 
