@@ -45,6 +45,10 @@ android {
     }
 }
 
+dependencies {
+    implementation(vcl.bundles.android.view)
+}
+
 //publish5hmlA("test", withSource = true)
 publish5hmlA("test")
 //publishMavenCentral("test", "debug", true)
