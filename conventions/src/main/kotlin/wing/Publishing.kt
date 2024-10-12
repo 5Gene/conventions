@@ -261,5 +261,6 @@ fun Project.publish5hmlA(libDescription: String, component: String = "debug", wi
 }
 //</editor-fold>
 
-
+const val GroupIdMavenCentral = "io.github.5gene"
+const val GroupIdGradlePlugin = "io.github.5hmlA"
 

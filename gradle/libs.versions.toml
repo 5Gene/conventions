@@ -1,20 +1,445 @@
 #https://github.com/terrakok/kmp-awesome
 
 [versions]
+gene-vcl = "24.10.12"
+gene-cartoon = "1.0"
+gene-cubic = "1.0"
+gene-view-dsl = "1.0"
+gene-adapter = "1.0"
+gene-spark = "1.0"
+gene-auto-service = "0.0.8"
+gene-ksp-poe = "0.0.4"
+gene-conventions = "2.1.11"
+gene-net-ksp-repository = "1.0"
+gene-net-ksp-anno = "1.0"
+gene-replace = "0.0.4"
+
 kotlin = "2.0.20"
-ksp = "2.0.0-1.0.21"
-android-gradle-plugin = "8.5.0"
-protobuf = "4.26.1"
-protobuf-plugin = "0.9.4"
-auto-service = "1.1.1"
+ksp = "2.0.20-1.0.25"
+android-gradle-plugin = "8.6.0"
+android-compileSdk = "35"
+android-minSdk = "26"
+android-targetSdk = "35"
+
+ktx-activity = "1.9.2"
+ktx-core = "1.13.1"
+ktx-collection = "1.4.4"
+ktx-preference = "1.2.1"
+ktx-dynamicanimation = "1.0.0-alpha03"
+ktx-navigationFragment = "2.7.7"
+ktx-fragment = "1.8.0"
+ktx-navigation-ui = "2.7.7"
+ktx-palette = "1.0.0"
+ktx-transition = "1.5.0"
+ktx-work-runtime = "2.9.1"
+
+#https://androidx.tech/artifacts/compose/compose-bom/
+androidx-compose-bom = "2024.09.02"
+androidx-compose-animation-core = "1.7.3"
+androidx-compose-activity = "1.9.2"
+androidx-compose-constraintlayout = "1.0.1"
+androidx-compose-navigation = "2.8.2"
+androidx-compose-hilt-navigation = "1.2.0"
+
+compose-coil = "2.7.0"
+
+androidx-lifecycle = "2.8.6"
+androidx-benchmark = "1.2.4"
+androidx-viewpager2 = "1.1.0"
+androidx-window = "1.3.0"
+androidx-window-ext = "1.0.0"
+androidx-profileinstaller = "1.3.1"
+androidx-core-splashscreen = "1.0.1"
+androidx-core-animation = "1.0.0"
+androidx-annotation = "1.8.1"
+androidx-navigation = "2.7.7"
 androidx-room = "2.6.1"
+androidx-datastore = "1.1.1"
+androidx-hilt = "1.2.0"
+androidx-test-ext = "1.1.5"
+androidx-test-espresso = "3.5.1"
+androidx-test-uiautomator = "2.3.0"
+androidx-paging = "3.3.2"
+androidx-appcompat = "1.7.0"
+androidx-dynamicanimation = "1.1.0-alpha03"
+androidx-swiperefreshlayout = "1.1.0"
+androidx-recyclerview = "1.3.2"
+androidx-constraintlayout = "2.1.4"
+androidx-bluetooth = "1.0.0-alpha02"
+androidx-webkit = "1.12.1"
+
+kotlinx-coroutines = "1.9.0"
+kotlinx-serialization = "1.6.3"
+kotlinx-datetime = "0.5.0"
+kotlinx-atomicfu = "0.23.2"
+kotlinx-io = "0.3.0"
+
+google-auto-service-anno = "1.1.1"
+google-accompanist = "0.36.0"
+
+detekt = "1.23.1"
+hilt = "2.49"
+lottie = "6.5.2"
+google-material = "1.12.0"
+spotless = "6.25.0"
+kode-detekt-rules-compose = "1.3.0"
+twitter-compose-rules = "0.0.26"
+desugar-jdk-libs = "2.0.4"
+
+koin-bom = "4.0.0"
+okhttp-bom = "4.12.0"
+
 junit = "4.13.2"
+mockk = "1.13.5"
+
+retrofit = "2.11.0"
+retrofit-kotlinx-serialization-converter = "1.0.0"
+
+ktor = "2.3.7"
+protobuf = "4.28.2"
+protobuf-plugin = "0.9.4"
 
 [libraries]
-google-auto-service-anno = { module = "com.google.auto.service:auto-service-annotations", version.ref = "auto-service" }
+gene-auto-service = { module = "io.github.5hmla:auto-service", version.ref = "gene-auto-service" }
+gene-conventions = { module = "io.github.5hmlA:conventions", version.ref = "gene-conventions" }
+gene-ksp-poe = { module = "io.github.5gene:ksp-poe", version.ref = "gene-ksp-poe" }
+gene-net-ksp-repository = { module = "io.github.5gene:net-ksp-repository", version.ref = "gene-net-ksp-repository" }
+gene-net-ksp-anno = { module = "io.github.5gene:net-ksp-anno", version.ref = "gene-net-ksp-anno" }
+gene-spark = { module = "io.github.5gene:spark", version.ref = "gene-spark" }
+gene-cartoon = { module = "io.github.5gene:cartoon", version.ref = "gene-cartoon" }
+gene-cubic = { module = "io.github.5gene:cubic", version.ref = "gene-cubic" }
+gene-view-dsl = { module = "io.github.5gene:view-dsl", version.ref = "gene-view-dsl" }
+gene-adapter = { module = "io.github.5gene:adapter", version.ref = "gene-adapter" }
+
+ksp-process-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+google-auto-service-anno = { module = "com.google.auto.service:auto-service-annotations", version.ref = "google-auto-service-anno" }
+
+#https://coil-kt.github.io/coil/compose/
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "compose-coil" }
+
+# compose-bom start >>>>>>>>>>>>androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-compose-bom" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-compose-bom" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui" }
+androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util" }
+androidx-compose-ui-unit = { module = "androidx.compose.ui:ui-unit" }
+androidx-compose-ui-text = { module = "androidx.compose.ui:ui-text" }
+androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
+androidx-compose-ui-geometry = { module = "androidx.compose.ui:ui-geometry" }
+androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
+androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
+androidx-compose-foundation-layout = { module = "androidx.compose.foundation:foundation-layout" }
+androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
+
+androidx-compose-animation = { module = "androidx.compose.animation:animation" }
+androidx-compose-animation-core = { module = "androidx.compose.animation:animation-core" }
+androidx-compose-animation-graphics = { module = "androidx.compose.animation:animation-graphics" }
+
+androidx-compose-material = { module = "androidx.compose.material:material" }
+androidx-compose-material-ripple = { module = "androidx.compose.material:material-ripple" }
+androidx-compose-material-icons-core = { module = "androidx.compose.material:material-icons-core" }
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+androidx-compose-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class" }
+
+androidx-compose-ui-viewbinding = { module = "androidx.compose.ui:ui-viewbinding" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-ui-tooling-data = { module = "androidx.compose.ui:ui-tooling-data" }
+androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+
+androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+# compose-bom end >>>>>>>>>>>>
+
+androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "androidx-compose-activity" }
+androidx-compose-constraintlayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "androidx-compose-constraintlayout" }
+androidx-compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-compose-navigation" }
+androidx-compose-hilt-navigation = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidx-compose-hilt-navigation" }
+
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
+androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "androidx-viewpager2" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "androidx-recyclerview" }
+androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintlayout" }
+androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "androidx-swiperefreshlayout" }
+androidx-bluetooth = { module = "androidx.bluetooth:bluetooth", version.ref = "androidx-bluetooth" }
+androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "androidx-webkit" }
+androidx-dynamicanimation = { module = "androidx.dynamicanimation:dynamicanimation", version.ref = "androidx-dynamicanimation" }
+androidx-window = { module = "androidx.window:window", version.ref = "androidx-window" }
+androidx-window-ext = { module = "androidx.window.extensions.core:core", version.ref = "androidx-window-ext" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen" }
+androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileinstaller" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
+
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "ktx-activity" }
+androidx-transition-ktx = { module = "androidx.transition:transition-ktx", version.ref = "ktx-transition" }
+androidx-dynamicanimation-ktx = { module = "androidx.dynamicanimation:dynamicanimation-ktx", version.ref = "ktx-dynamicanimation" }
+androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "ktx-navigation-ui" }
+androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "ktx-palette" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "ktx-work-runtime" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "ktx-core" }
+androidx-core-animation = { module = "androidx.core:core-animation", version.ref = "androidx-core-animation" }
+androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "ktx-preference" }
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "ktx-fragment" }
+androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "ktx-navigationFragment" }
+
+androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidx-benchmark" }
+androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-ext" }
+androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso" }
+androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidx-test-uiautomator" }
+
+androidx-room-common = { module = "androidx.room:room-common", version.ref = "androidx-room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidx-room" }
+androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "androidx-room" }
+
+androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "androidx-paging" }
+androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "androidx-paging" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
+androidx-paging-common-ktx = { module = "androidx.paging:paging-common-ktx", version.ref = "androidx-paging" }
+androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime-ktx", version.ref = "androidx-paging" }
+
+google-material = { module = "com.google.android.material:material", version.ref = "google-material" }
+google-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "google-accompanist" }
+google-accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "google-accompanist" }
+google-accompanist-placeholder-material = { module = "com.google.accompanist:accompanist-placeholder-material", version.ref = "google-accompanist" }
+google-accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "google-accompanist" }
+google-accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "google-accompanist" }
+google-accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "google-accompanist" }
+google-accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "google-accompanist" }
+google-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "google-accompanist" }
+google-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "google-accompanist" }
+google-accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "google-accompanist" }
+
+ktor-client = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+
+#https://insert-koin.io/docs/setup/koin/
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-test = { module = "io.insert-koin:koin-test" }
+koin-core-coroutines = { module = "io.insert-koin:koin-core-coroutines" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-android-compat = { module = "io.insert-koin:koin-android-compat" }
+koin-android-test = { module = "io.insert-koin:koin-android-test" }
+koin-androidx-navigation = { module = "io.insert-koin:koin-androidx-navigation" }
+koin-androidx-workmanager = { module = "io.insert-koin:koin-androidx-workmanager" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
+koin-compose = { module = "io.insert-koin:koin-compose" }
+koin-androidx-compose-navigation = { module = "io.insert-koin:koin-androidx-compose-navigation" }
+koin-ktor = { module = "io.insert-koin:koin-ktor" }
+
 test-junit = { module = "junit:junit", version.ref = "junit" }
+test-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+#https://github.com/Kotlin/kotlinx-atomicfu
+kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlinx-atomicfu" }
+kotlinx-io = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
+
+dagger-hilt-core = { module = "com.google.dagger:hilt-core", version.ref = "hilt" }
+dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+dagger-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+
+# https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp-bom
+okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp-bom" }
+okhttp = { module = "com.squareup.okhttp3:okhttp" }
+okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit-kotlinx-serialization-converter" }
+
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+kode-detekt-rules-compose = { module = "ru.kode:detekt-rules-compose", version.ref = "kode-detekt-rules-compose" }
+twitter-compose-rules-detekt = { module = "com.twitter.compose.rules:detekt", version.ref = "twitter-compose-rules" }
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
+protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "protobuf" }
+
+# Dependencies of the included build-logic.
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+spotless-gradle-plugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+
+lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
+
+#The following Jetpack libraries provide KMP support:
+#https://github.com/terrakok/kmp-awesome
+# https://developer.android.google.cn/kotlin/multiplatform
+kmp-androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+kmp-androidx-collection-ktx = { module = "androidx.collection:collection-ktx", version.ref = "ktx-collection" }
+kmp-androidx-datastore = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
+kmp-androidx-paging = { module = "androidx.paging:paging-common", version.ref = "androidx-paging" }
+kmp-androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
+kmp-androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
+kmp-androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+kmp-androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+kmp-androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
+kmp-androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+kmp-androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 
 [bundles]
+
+compose-kmp = [
+    "kmp-androidx-datastore",
+    "kmp-androidx-paging",
+    "kmp-androidx-annotation",
+    "kmp-androidx-collection-ktx",
+    "kmp-androidx-lifecycle-process",
+    "kmp-androidx-lifecycle-livedata-ktx",
+    "kmp-androidx-lifecycle-runtime-ktx",
+    "kmp-androidx-lifecycle-viewmodel-ktx",
+    "kmp-androidx-lifecycle-viewmodel-savedstate",
+    "kmp-androidx-lifecycle-runtime-compose",
+    "kmp-androidx-lifecycle-viewmodel-compose",
+    "kotlinx-coroutines-core",
+]
+
+compose = [
+    "androidx-compose-ui",
+    "androidx-compose-ui-util",
+    "androidx-compose-ui-text",
+    "androidx-compose-ui-graphics",
+    "androidx-compose-ui-geometry",
+    "androidx-compose-material",
+    "androidx-compose-material3",
+    "androidx-compose-runtime",
+    "androidx-compose-activity",
+    "androidx-compose-foundation",
+    "androidx-compose-animation-core",
+    "androidx-compose-runtime-livedata",
+    "androidx-compose-foundation-layout",
+    "androidx-compose-animation-graphics",
+    "kmp-androidx-lifecycle-runtime-compose",
+    "kmp-androidx-lifecycle-viewmodel-compose",
+    #   https://developer.android.google.cn/jetpack/compose/layouts/constraintlayout
+    #   https://developer.android.google.cn/jetpack/compose/layouts/constraintlayout?hl=zh-cn
+    "androidx-compose-constraintlayout",
+    "androidx-compose-ui-tooling-preview",
+    "kmp-androidx-datastore",
+    "kmp-androidx-annotation",
+]
+
+compose-optional = [
+    # Optional - Add window size utils
+    "androidx-compose-material3-window-size",
+    # Optional - Included automatically by material, only add when you need
+    # the icons but not the material library (e.g. when using Material3 or a
+    # custom design system based on Foundation)
+    "androidx-compose-material-icons-core",
+    # Optional - Add full set of material icons
+    "androidx-compose-material-icons-extended",
+]
+
+android-basic = [
+    "androidx-core-ktx",
+    "androidx-appcompat",
+    "androidx-fragment-ktx",
+    "androidx-activity-ktx",
+    "androidx-core-animation",
+    "kmp-androidx-annotation",
+    "kmp-androidx-lifecycle-runtime-ktx",
+    "kmp-androidx-lifecycle-viewmodel-ktx",
+    "kotlinx-coroutines-android",
+    "kotlinx-coroutines-core",
+]
+
+android-view = [
+    "lottie",
+    "androidx-core-ktx",
+    "androidx-viewpager2",
+    "androidx-fragment-ktx",
+    "androidx-activity-ktx",
+    "androidx-recyclerview",
+    "androidx-constraintlayout",
+    "androidx-swiperefreshlayout",
+    "kmp-androidx-collection-ktx",
+]
+
+# https://androidx.tech/artifacts-index
+android-project = [
+    "google-material",
+    "androidx-core-ktx",
+    "androidx-appcompat",
+    "androidx-fragment-ktx",
+    "androidx-activity-ktx",
+    "kmp-androidx-annotation",
+    "koin-androidx-navigation",
+    "androidx-navigation-ui-ktx",
+    "androidx-core-splashscreen",
+    "kmp-androidx-collection-ktx",
+    "androidx-navigation-fragment-ktx",
+    "kmp-androidx-lifecycle-livedata-ktx",
+    "kmp-androidx-lifecycle-viewmodel-ktx",
+    "kmp-androidx-lifecycle-viewmodel-savedstate",
+    "kotlinx-coroutines-core",
+    "kotlinx-coroutines-android",
+]
+
+android-optional = [
+    "androidx-window-ext",
+    "androidx-palette-ktx",
+    "kmp-androidx-datastore",
+    "androidx-preference-ktx",
+    "androidx-work-runtime-ktx",
+    "kmp-androidx-collection-ktx",
+    "androidx-datastore-preferences",
+    "kotlinx-io",
+    "kotlinx-datetime",
+    "kotlinx-atomicfu",
+    "kotlinx-coroutines-core",
+    "kotlinx-serialization-json",
+]
+
+androidx-room = ["androidx-room-runtime", "androidx-room-ktx", "androidx-room-paging"]
+#https://developer.android.google.cn/studio/profile/benchmark?hl=zh-cn
+androidx-benchmark = [
+    "androidx-test-ext-junit",
+    "androidx-test-espresso-core",
+    "androidx-test-uiautomator",
+    "androidx-benchmark-macro-junit4"
+]
+
+okhttp = ["okhttp-logging", "okhttp", "retrofit", "retrofit-kotlinx-serialization-converter"]
+
+koin = [
+    "koin-android",
+    "koin-android-compat",
+    "koin-androidx-compose",
+    "koin-androidx-workmanager",
+    "koin-compose",
+    "koin-ktor",
+    "koin-core-coroutines",
+    "koin-core"
+]
+
+ktor = ["ktor-client", "ktor-client-logging"]
+
+# https://juejin.cn/post/6970605080328765453
+android-accompanist = [
+    "google-accompanist-drawablepainter",
+    "google-accompanist-flowlayout",
+    "google-accompanist-insets",
+    "google-accompanist-pager",
+    "google-accompanist-pager-indicators",
+    "google-accompanist-permissions",
+    "google-accompanist-placeholder-material",
+    "google-accompanist-swiperefresh",
+    "google-accompanist-systemuicontroller",
+    "google-accompanist-webview",
+]
+
+# https://developer.android.com/develop/ui/views/animations/overview
+animation = [
+    "androidx-core-animation",
+    "androidx-transition-ktx",
+    "androidx-dynamicanimation",
+    "androidx-compose-animation",
+    "androidx-dynamicanimation-ktx",
+]
+
 [plugins]
 #https://developer.android.com/build/releases/gradle-plugin
 #https://developer.android.com/build/jdks?hl=zh-cn
@@ -28,5 +453,15 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "androidx-room" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 #https://plugins.gradle.org/plugin/com.google.protobuf
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
+
+gene-compose = { id = "io.github.5hmlA.android.compose", version.ref = "gene-conventions" }
+gene-android = { id = "io.github.5hmlA.android", version.ref = "gene-conventions" }
+gene-protobuf = { id = "io.github.5hmlA.protobuf", version.ref = "gene-conventions" }
+gene-knife = { id = "io.github.5hmlA.knife", version.ref = "gene-conventions" }
+gene-dev-ksp = { id = "io.github.5hmlA.dev.ksp", version.ref = "gene-conventions" }
+gene-replace = { id = "io.github.5hmlA:replace", version.ref = "gene-replace" }

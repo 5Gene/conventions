@@ -104,14 +104,14 @@ gradlePlugin {
             displayName = "android config plugin"
             description = "android build common config for build.gradle, this will auto add android necessary dependencies"
             tags = listOf("config", "android", "convention")
-            implementationClass = "AndroidConfig"
+            implementationClass = "AndroidPlugin"
         }
         register("android-compose") {
             id = "${group}.android.compose"
             displayName = "android compose config plugin"
             description = "android compose config for build.gradle, necessary related settings for compose will be automatically set"
             tags = listOf("compose", "config", "android", "convention")
-            implementationClass = "AndroidComposeConfig"
+            implementationClass = "AndroidComposePlugin"
         }
         register("protobuf-config") {
             id = "${group}.protobuf"
@@ -119,7 +119,7 @@ gradlePlugin {
             description =
                 "protobuf config for any gradle project, necessary configuration and dependencies will be automatically set up"
             tags = listOf("protobuf", "config", "convention")
-            implementationClass = "ProtobufConfig"
+            implementationClass = "ProtobufPlugin"
         }
         register("agp-knife") {
             id = "${group}.knife"
@@ -127,13 +127,6 @@ gradlePlugin {
             description = "Simplify the use of complex agp api and isolate the differences between different agp versions"
             tags = listOf("android gradle plugin", "knife", "convention")
             implementationClass = "AGPKnifePlugin"
-        }
-        register("ksp-dev") {
-            id = "${group}.dev.ksp"
-            displayName = "ksp-dev"
-            description = "Simplify for ksp develop"
-            tags = listOf("dev", "ksp", "convention")
-            implementationClass = "KSPDevConfig"
         }
 
 //        因为xxx.gradle.kts注册插件的时候不会设置displayName 尝试这里覆盖注册，结果无效，

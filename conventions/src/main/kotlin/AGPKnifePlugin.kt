@@ -17,8 +17,8 @@ import wing.red
 import wing.toStr
 
 //https://developer.android.google.cn/build/extend-agp?hl=zh-cn
-class AGPKnifePlugin : AbsAndroidConfig() {
-    context(Project) override fun androidComponentsExtensionConfig(): AndroidComponentsExtensions.(VersionCatalog) -> Unit =
+class AGPKnifePlugin : AbsAndroidPlugin() {
+    override fun androidComponentsExtensionConfig(project: Project): AndroidComponentsExtensions.(VersionCatalog) -> Unit =
         { _ ->
 
             val knifeImpl = KnifeImpl()
@@ -27,7 +27,7 @@ class AGPKnifePlugin : AbsAndroidConfig() {
             val variantKnifeActionImpl = VariantKnifeActionImpl()
             variantKnifeActionImpl.createExtension(knifeExtension)
 
-            log("knife > knifeExtension:${knifeImpl.onVariants}")
+            project.log("knife > knifeExtension:${knifeImpl.onVariants}")
 
             /**
              * plugin中的onVariants{}会优先执行 ,所以app中建议用 beforeVariants{}遍历和配置
@@ -36,7 +36,7 @@ class AGPKnifePlugin : AbsAndroidConfig() {
                 knifeImpl.onVariants?.let {
                     it.invoke(variant)//variant回调到build.gradle
                     //build.gradle中通过utility{}注册asmTransform到variantAction
-                    log("knife > onVariant:${variant.name}")
+                    project.log("knife > onVariant:${variant.name}")
                     //存在listenArtifact的时候才创建task
                     tryListenArtifact(variantKnifeActionImpl, project, variant)
                     //transform

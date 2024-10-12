@@ -8,11 +8,7 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-import wing.AndroidCommonExtension
-import wing.AndroidComponentsExtensions
-import wing.androidExtensionComponent
-import wing.log
-import wing.vlibs
+import wing.*
 
 
 /**
@@ -29,11 +25,10 @@ import wing.vlibs
  * https://medium.com/androiddevelopers/new-apis-in-the-android-gradle-plugin-f5325742e614
  *
  */
-open class AbsAndroidConfig : Plugin<Project> {
+open class AbsAndroidPlugin : Plugin<Project> {
 
 
-    context(Project)
-    open fun onProject() {
+    open fun onProject(project: Project) {
     }
 
     /**
@@ -46,8 +41,7 @@ open class AbsAndroidConfig : Plugin<Project> {
      *     }
      * ```
      */
-    context(Project)
-    open fun pluginConfigs(): PluginManager.(VersionCatalog) -> Unit = {}
+    open fun pluginConfigs(project: Project): PluginManager.(VersionCatalog) -> Unit = {}
 
     /**
      * ```kotlin
@@ -60,15 +54,12 @@ open class AbsAndroidConfig : Plugin<Project> {
      *     }
      * ```
      */
-    context(Project)
-    open fun androidExtensionConfig(): AndroidCommonExtension.(VersionCatalog) -> Unit = { _ -> }
+    open fun androidExtensionConfig(project: Project): AndroidCommonExtension.(VersionCatalog) -> Unit = { _ -> }
 
-    context(Project)
-    open fun androidComponentsExtensionConfig(): AndroidComponentsExtensions.(VersionCatalog) -> Unit = { _ -> }
+    open fun androidComponentsExtensionConfig(project: Project): AndroidComponentsExtensions.(VersionCatalog) -> Unit = { _ -> }
 
 
-    context(Project)
-    open fun kotlinOptionsConfig(): KotlinJvmCompilerOptions.() -> Unit = { }
+    open fun kotlinOptionsConfig(project: Project): KotlinJvmCompilerOptions.() -> Unit = { }
 
     /**
      * ```kotlin
@@ -79,8 +70,7 @@ open class AbsAndroidConfig : Plugin<Project> {
      *     }
      * ```
      */
-    context(Project)
-    open fun dependenciesConfig(): DependencyHandlerScope.(VersionCatalog) -> Unit = { }
+    open fun dependenciesConfig(project: Project): DependencyHandlerScope.(VersionCatalog) -> Unit = { }
 
     override fun apply(target: Project) {
         // Registers a callback on the application of the Android Application plugin.
@@ -89,27 +79,27 @@ open class AbsAndroidConfig : Plugin<Project> {
         target.plugins.withType(BasePlugin::class.java) {
             //application or library
             with(target) {
-                log("=========================== START【${this@AbsAndroidConfig}】 =========================")
+                log("=========================== START【${this@AbsAndroidPlugin}】 =========================")
                 log("常见构建自定义的即用配方，展示如何使用Android Gradle插件的公共API和DSL:")
                 log("https://github.com/android/gradle-recipes")
-                onProject()
+                onProject(target)
                 val catalog = vlibs
                 with(pluginManager) {
-                    pluginConfigs()(catalog)
+                    pluginConfigs(target)(catalog)
                 }
                 androidExtensionComponent?.apply {
                     finalizeDsl { android ->
                         with(android) {
-                            androidExtensionConfig()(catalog)
+                            androidExtensionConfig(target)(catalog)
                         }
                     }
-                    androidComponentsExtensionConfig()(catalog)
+                    androidComponentsExtensionConfig(target)(catalog)
                 }
 
                 //https://kotlinlang.org/docs/gradle-compiler-options.html#target-the-jvm
                 tasks.withType<KotlinJvmCompile>().configureEach {
                     compilerOptions {
-                        kotlinOptionsConfig()()
+                        kotlinOptionsConfig(target)()
                     }
                 }
                 //和上面等效
@@ -120,9 +110,9 @@ open class AbsAndroidConfig : Plugin<Project> {
                 //    }
                 //}
                 dependencies {
-                    dependenciesConfig()(catalog)
+                    dependenciesConfig(target)(catalog)
                 }
-                log("=========================== END【${this@AbsAndroidConfig}】 =========================")
+                log("=========================== END【${this@AbsAndroidPlugin}】 =========================")
                 //生成apk地址
                 //https://github.com/android/gradle-recipes/blob/agp-8.4/allProjectsApkAction/README.md
                 //com.android.build.gradle.internal.variant.VariantPathHelper.getApkLocation

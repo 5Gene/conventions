@@ -7,7 +7,10 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugin.devel.PluginDeclaration
 
-fun Project.gradlePluginSet(emptySource: Boolean = true, action: Action<in NamedDomainObjectContainer<PluginDeclaration>>) {
+/**
+ * gradle插件发布配置
+ */
+fun Project.publishGradlePluginSet(emptySource: Boolean = true, action: Action<in NamedDomainObjectContainer<PluginDeclaration>>) {
     if (emptySource) {
         sourceJarEmpty()
     }
@@ -30,7 +33,6 @@ fun Project.gradlePluginSet(emptySource: Boolean = true, action: Action<in Named
     //For both the JVM and Android projects, it's possible to define options using the project Kotlin extension DSL:
     kotlinExtension?.apply {
         compilerOptions {
-//            freeCompilerArgs.add("-Xcontext-receivers")
             apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
             languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         }

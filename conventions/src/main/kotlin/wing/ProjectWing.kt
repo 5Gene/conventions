@@ -15,7 +15,6 @@
  */
 
 @file:Suppress("UNCHECKED_CAST")
-
 package wing
 
 import com.android.build.api.dsl.ApplicationExtension
@@ -36,7 +35,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
 import kotlin.jvm.optionals.getOrNull
-
 
 fun Project.log(msg: String) {
     //🎉 📣 🎗️ 🔥 📜 💯 📸 🎲 🚀 💡 🔔 🔪 🐼 ✨
@@ -119,13 +117,6 @@ fun Collection<*>.toStr(): String {
     return toTypedArray().contentToString()
 }
 
-fun AndroidCommonExtension.kspSourceSets() {
-    srcDirs(
-        "build/generated/ksp/main/kotlin",
-        "build/generated/ksp/main/java"
-    )
-}
-
 fun AndroidCommonExtension.srcDirs(vararg srcDirs: Any) {
     sourceSets.getByName("main") {
         kotlin {
@@ -143,37 +134,29 @@ fun RepositoryHandler.chinaRepos() {
     google()
     mavenCentral()
     //限定指定规则的group只访问5hmlA仓库
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = "5hmlA"
-                isAllowInsecureProtocol = true
-                setUrl("https://maven.pkg.github.com/5hmlA/sparkj")
-                credentials {
-                    // https://www.sojson.com/ascii.html
-                    username = "5hmlA"
-                    password =
-                        "\u0067\u0068\u0070\u005f\u004f\u0043\u0042\u0045\u007a\u006a\u0052\u0069\u006e\u0043\u0065\u0048\u004c\u0068\u006b\u0052\u0036\u0056\u0061\u0041\u0074\u0068\u004f\u004a\u0059\u0042\u0047\u0044\u0073\u0049\u0032\u0070\u0064\u0064\u0069\u0066"
-                }
+    maven {
+        name = "5hmlA"
+        isAllowInsecureProtocol = true
+        setUrl("https://maven.pkg.github.com/5hmlA/sparkj")
+        credentials {
+            // https://www.sojson.com/ascii.html
+            username = "5hmlA"
+            password =
+                "\u0067\u0068\u0070\u005f\u004f\u0043\u0042\u0045\u007a\u006a\u0052\u0069\u006e\u0043\u0065\u0048\u004c\u0068\u006b\u0052\u0036\u0056\u0061\u0041\u0074\u0068\u004f\u004a\u0059\u0042\u0047\u0044\u0073\u0049\u0032\u0070\u0064\u0064\u0069\u0066"
+            //只有以下规则的group才会访问5hmlA仓库
+            content {
+                //https://blog.csdn.net/jklwan/article/details/99351808
+                includeGroupByRegex("osp.spark.*")
+                includeGroupByRegex("osp.june.*")
+                includeGroupByRegex("osp.gene.*")
             }
         }
-        filter {
-            includeGroup("osp.june")
-            includeGroup("osp.sparkj")
-        }
     }
-
 }
 
 fun java.nio.file.Path.isGradleProject(): Boolean = if (!isDirectory()) false else listDirectoryEntries().any {
     it.toString() == "build.gradle.kts"
 }
-
-//class ProjectRead(project: Project) : ReadOnlyProperty<Project, String> {
-//    override fun getValue(thisRef: Project, property: KProperty<*>): String {
-//        return thisRef.properties[property.name]?.toString() ?: System.getenv(property.name)
-//    }
-//}
 
 val String.lookDown: String
     get() = "👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇 $this 👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇"
@@ -208,7 +191,6 @@ fun Project.logTasks() {
         }
     }
 }
-
 
 fun VersionCatalog?.findVersionStr(alias: String) = this?.findVersion(alias)?.getOrNull()?.toString()
 

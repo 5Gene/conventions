@@ -6,45 +6,41 @@ import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.buildscript
 import org.gradle.kotlin.dsl.repositories
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
-import wing.AndroidCommonExtension
-import wing.AndroidComponentsExtensions
-import wing.chinaRepos
-import wing.log
-import wing.red
+import wing.*
 import java.io.File
 
-open class AndroidConfig : AbsAndroidConfig() {
+open class AndroidPlugin : AbsAndroidPlugin() {
 
     private var androidConfig: Android? = null
 
-    context(Project) override fun onProject() {
+    override fun onProject(project: Project) {
         androidConfig = AndroidBase()
-        if (findProperty("config.android.room") == "true") {
+        if (project.findProperty("config.android.room") == "true") {
             androidConfig = AndroidRoom(androidConfig)
         }
-        buildCacheDir()
-        repoConfig()
+        project.buildCacheDir()
+        project.repoConfig()
     }
 
-    context(Project) override fun pluginConfigs(): PluginManager.(VersionCatalog) -> Unit = {
-        androidConfig?.pluginConfigs()?.invoke(this, it)
+    override fun pluginConfigs(project: Project): PluginManager.(VersionCatalog) -> Unit = {
+        androidConfig?.pluginConfigs(project)?.invoke(this, it)
     }
 
 
-    context(Project) override fun androidExtensionConfig(): AndroidCommonExtension.(VersionCatalog) -> Unit = {
-        androidConfig?.androidExtensionConfig()?.invoke(this, it)
+    override fun androidExtensionConfig(project: Project): AndroidCommonExtension.(VersionCatalog) -> Unit = {
+        androidConfig?.androidExtensionConfig(project)?.invoke(this, it)
     }
 
-    context(Project) override fun androidComponentsExtensionConfig(): AndroidComponentsExtensions.(VersionCatalog) -> Unit = {
-        androidConfig?.androidComponentsExtensionConfig()?.invoke(this, it)
+    override fun androidComponentsExtensionConfig(project: Project): AndroidComponentsExtensions.(VersionCatalog) -> Unit = {
+        androidConfig?.androidComponentsExtensionConfig(project)?.invoke(this, it)
     }
 
-    context(Project) override fun kotlinOptionsConfig(): KotlinJvmCompilerOptions.() -> Unit = {
-        androidConfig?.kotlinOptionsConfig()?.invoke(this)
+    override fun kotlinOptionsConfig(project: Project): KotlinJvmCompilerOptions.() -> Unit = {
+        androidConfig?.kotlinOptionsConfig(project)?.invoke(this)
     }
 
-    context(Project) override fun dependenciesConfig(): DependencyHandlerScope.(VersionCatalog) -> Unit = {
-        androidConfig?.dependenciesConfig()?.invoke(this, it)
+    override fun dependenciesConfig(project: Project): DependencyHandlerScope.(VersionCatalog) -> Unit = {
+        androidConfig?.dependenciesConfig(project)?.invoke(this, it)
     }
 
     private fun Project.buildCacheDir() {

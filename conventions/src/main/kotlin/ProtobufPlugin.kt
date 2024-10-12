@@ -8,15 +8,15 @@ import wing.vlibs
 /**
  * 插件引入方式
  * ```kotlin
- * apply<ProtobufConfig>()
+ * apply<ProtobufPlugin>()
  * ```
  */
 
-class ProtobufConfig : Plugin<Project> {
+class ProtobufPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         with(target) {
-            log("=========================== START【${this@ProtobufConfig}】 =========================")
+            log("=========================== START【${this@ProtobufPlugin}】 =========================")
             with(pluginManager) {
                 apply("com.google.protobuf")
             }
@@ -52,7 +52,7 @@ class ProtobufConfig : Plugin<Project> {
             println("   - 不要发送包含很多字段的消息 ")
             println("   - 不要更改字段的默认值 ")
             println("   - 不要更改字段的默认值 ")
-            log("=========================== START【${this@ProtobufConfig}】 =========================")
+            log("=========================== START【${this@ProtobufPlugin}】 =========================")
         }
     }
 }
