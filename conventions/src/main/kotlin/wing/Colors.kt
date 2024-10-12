@@ -61,7 +61,6 @@ val String.bgBlack: String
     get() = "\u001B[40m${this}\u001B[0m"
 
 
-context(Project)
-fun String.print() {
-    println("\u001B[93m✨ $name >> ${this}\u001B[0m")
+fun Project.debug(msg: String) {
+    println("\u001B[93m✨ $name >> ${msg}\u001B[0m")
 }

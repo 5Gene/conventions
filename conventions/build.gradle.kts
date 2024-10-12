@@ -39,8 +39,6 @@ repositories {
 //For both the JVM and Android projects, it's possible to define options using the project Kotlin extension DSL:
 kotlin {
     compilerOptions {
-//        jvmTarget.set(JvmTarget.JVM_17)
-        freeCompilerArgs.add("-Xcontext-receivers")
         apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
     }
@@ -50,21 +48,21 @@ dependencies {
     //includeBuild()中拿不到项目的properties，这里通过System.property取
 //    编译插件的时候就会用到，不需要配置，编译的时候修改就行了
 //    val agp = sysprop("dep.agp.ver", "8.2.0")
-    compileOnly("com.android.tools.build:gradle-api:${libs.versions.android.gradle.plugin.get()}")
+    compileOnly("com.android.tools.build:gradle-api:${vcl.versions.android.gradle.plugin.get()}")
     //compileOnly("com.android.tools.build:gradle:${libs.versions.android.gradle.plugin.get()}")
     //gradle plugin id 规则 plugin_id:plugin_id.gradle.plugin:version
-    compileOnly("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:${libs.versions.ksp.get()}")
-    compileOnly("androidx.room:androidx.room.gradle.plugin:${libs.versions.androidx.room.get()}")
-    compileOnly("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${libs.versions.kotlin.get()}")
+    compileOnly("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:${vcl.versions.ksp.get()}")
+    compileOnly("androidx.room:androidx.room.gradle.plugin:${vcl.versions.androidx.room.get()}")
+    compileOnly("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${vcl.versions.kotlin.get()}")
 //    https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 //    https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
 //    https://github.com/JetBrains/kotlin/
 //    kotlin("gradle-plugin", "1.9.24") == org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24
 
-    compileOnly(kotlin(module = "gradle-plugin", version = libs.versions.kotlin.get()))
-    implementation("com.google.protobuf:protobuf-gradle-plugin:${libs.versions.protobuf.plugin.get()}")
+    compileOnly(kotlin(module = "gradle-plugin", version = vcl.versions.kotlin.get()))
+    implementation("com.google.protobuf:protobuf-gradle-plugin:${vcl.versions.protobuf.plugin.get()}")
     implementation("com.gradle.publish:plugin-publish-plugin:1.2.1")
-    testImplementation(libs.test.junit)
+    testImplementation(vcl.test.junit)
 //    compileOnly(gradleKotlinDsl())
     // help->dependencies只会输出implementation的库的依赖关系
 }
@@ -74,10 +72,8 @@ dependencies {
 //"======== superclass= ${this.javaClass.superclass}".print()
 //"======== rootProject= $rootProject".print()
 
-//group = "osp.sparkj.plugin"
 group = "io.github.5hmlA"
-//version = wings.versions.conventions.get()
-version = "2.1.10"
+version = libs.versions.gene.conventions.get()
 
 //插件推送之前 先去掉不符合规范的插件
 tasks.findByName("publishPlugins")?.doFirst {

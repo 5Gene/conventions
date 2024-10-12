@@ -7,7 +7,6 @@ plugins {
     alias(vcl.plugins.room) apply false
     alias(vcl.plugins.compose.compiler) apply false
     id("io.github.5hmlA.android.compose")
-//    id("io.github.5hmlA.android")
     id("io.github.5hmlA.protobuf")
     id("io.github.5hmlA.knife")
 }

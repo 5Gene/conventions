@@ -45,7 +45,7 @@ fun Project.publishGradlePluginSet(emptySource: Boolean = true, action: Action<i
     //插件推送之前 先去掉不符合规范的插件
     tasks.findByName("publishPlugins")?.doFirst {
         //doFirst on task ':conventions:publishPlugins'
-        ">> doFirst on $this ${this.javaClass}".print()
+        debug(">> doFirst on $this ${this.javaClass}")
         //不太明白为什么这里也报错 Extension of type 'GradlePluginDevelopmentExtension' does not exist
         //因为取错对象的extensions了，这里的this是com.gradle.publish.PublishTask_Decorated, 这个task也有extensions
         val plugins = rootProject.extensions.getByType<GradlePluginDevelopmentExtension>().plugins
@@ -54,7 +54,7 @@ fun Project.publishGradlePluginSet(emptySource: Boolean = true, action: Action<i
             it.displayName.isNullOrEmpty()
         }
         plugins.forEach {
-            "- plugin to publish > ${it.name} ${it.id} ${it.displayName}".print()
+            debug("- plugin to publish > ${it.name} ${it.id} ${it.displayName}")
         }
     }
 
@@ -69,16 +69,16 @@ fun Project.publishGradlePluginSet(emptySource: Boolean = true, action: Action<i
         //所以这里判断补充必要数据否则发布不了，执行 [plugin portal -> publishPlugins]的时候会报错
 
         plugins.forEach {
-            "- plugin -- ${it.name} ${it.id} ${it.displayName}".print()
+            debug("- plugin -- ${it.name} ${it.id} ${it.displayName}")
         }
     }
 
     tasks.getByName("publishPlugins").doLast {
-        "插件发布成功，点击🔗查看：https://plugins.gradle.org/".print()
+        debug("插件发布成功，点击🔗查看：https://plugins.gradle.org/")
 
-        "插件地址: https://plugins.gradle.org/u/ZuYun".print()
+        debug("插件地址: https://plugins.gradle.org/u/ZuYun")
         //    https://plugins.gradle.org/docs/mirroring
         //    The URL to mirror is https://plugins.gradle.org/m2/
-        "插件下载地址: https://plugins.gradle.org/m2/io/github/5hmlA/".print()
+        debug("插件下载地址: https://plugins.gradle.org/m2/io/github/5hmlA/")
     }
 }

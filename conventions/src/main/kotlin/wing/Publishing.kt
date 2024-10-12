@@ -149,7 +149,7 @@ fun Project.url(): Lazy<String> = lazy {
         standardOutput = stdout
     }
     val remoteUrl = stdout.toString().trim()
-    "Remote URL: ${remoteUrl.removeSuffix(".git")}".print()
+    debug("Remote URL: ${remoteUrl.removeSuffix(".git")}")
     remoteUrl
 }
 

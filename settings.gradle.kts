@@ -12,15 +12,10 @@ pluginManagement {
 }
 
 plugins {
-    id("io.github.5hmlA.vcl") version "24.10.01"
+    id("io.github.5hmlA.vcl") version "24.10.12-3"
 }
 
 dependencyResolutionManagement {
-    versionCatalogs {
-        create("wings") {
-            from("io.github.5hmla:vcatalog:24.09.29")
-        }
-    }
     repositories {
         google()
         mavenCentral()
