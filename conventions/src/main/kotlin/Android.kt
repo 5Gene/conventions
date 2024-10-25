@@ -185,9 +185,25 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
 //        println("KotlinJvmCompilerOptions -> javaVersion: ${jvmTargetVersion.name}")
         jvmTarget.set(jvmTargetVersion)
 
-        //languageVersion 和 apiVersion 只是对代码语法和 API 可用性的指示
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        //apiVersion
+        // 作用：在编译期间，编译器会根据指定的 apiVersion 来检查使用的 API。如果代码中使用了超出该版本的标准库 API，编译器将会报错。
+        // 示例：如果设置为 1.9，则不允许使用 2.0 中引入的 API；如果尝试使用，将导致编译错误。
+        // 例如，如果设置为 2.2 那么项目配置的kotlin版本必须高于等于2.2。
+        //apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+
+        //languageVersion
+        // 作用：在使用支持 Kotlin 的集成开发环境（IDE）时，IDE 将根据 languageVersion 的设置提供代码提示、语法高亮和智能提示。这意味着 IDE 只会在代码补全时提供适合指定语言版本的特性，避免提示不支持的语法。
+        // 示例：如果设置为 1.9，IDE 可能不会提示 2.0 中的新特性。
+        // 例如，如果设置为 1.9，则可以使用 1.9 中的所有特性，但不能使用 2.0 中的新特性。
         languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        //总结：
+        //languageVersion 主要影响语言特性的使用，决定了你可以使用哪些 Kotlin 语法和结构。
+        //apiVersion 主要影响可用的标准库 API，确保代码兼容特定版本的库功能。
+
+        //版本关系
+        // 通常，apiVersion 不应该高于 languageVersion。
+        // 因为 API 版本代表了库的功能，而语言版本则是对语法的支持。
+        // 因此，如果 languageVersion 较低，编译器可能无法解析更高版本 API 的语法或特性。
     }
 
     override fun dependenciesConfig(project: Project): DependencyHandlerScope.(VersionCatalog) -> Unit = { catalog ->
