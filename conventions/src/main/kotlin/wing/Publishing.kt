@@ -12,24 +12,9 @@ import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.SigningExtension
 import tasks.PublishToMavenCentralTask
-import java.io.ByteArrayOutputStream
 import java.io.File
 
 const val LOCAL_REPO_PATH = "build/repo"
-//查看某个task的依赖关系
-//tasks["your task"].taskDependencies.getDependencies(tasks["your task"]).forEach {
-//    println(it.name)
-//}
-
-fun Task.showDependencies(action: ((Task) -> Unit)? = null) {
-    taskDependencies.getDependencies(this).forEach {
-        if (action != null) {
-            action.invoke(it)
-        } else {
-            println("$name dependsOn: ${it.name}")
-        }
-    }
-}
 
 /**
  * - 1 配置publish
@@ -43,121 +28,24 @@ fun Project.publishKotlinMavenCentral(libDescription: String) = publishMavenCent
 
 fun Project.publishAndroidMavenCentral(libDescription: String) = publishMavenCentral(libDescription, "debug", false)
 
-fun Project.publishMavenCentral(libDescription: String, component: String = "debug", withSource: Boolean = false) {
-    val projectName = name
-    //配置publish任务, 发布到MavenCentral必须要有sources.jar和javadoc.jar
-    val publishing = publish5hmlA(libDescription, component, withSource)
-
-    //配置签名
-    signingPublications(publishing)
-    //配置压缩任务，后续上传需要
-    //1 publishSparkPublicationToLocalRepoRepository
-    //2 zipForSignedPublication
-    //3 publishToMavenCentral
-    // 1 发布,签名
-    //这个task会自动依赖signSparkPublication
-    //https://docs.gradle.org/current/userguide/kotlin_dsl.html
-//    val publishSparkPublicationToLocalRepoRepository by tasks.existing {
-//        //执行之前先清空之前发布的内容
-//        File(LOCAL_REPO_PATH).deleteRecursively()
-//    }
-    val publishToLocalRepo = tasks["publishSparkPublicationToLocalRepoRepository"].doFirst {
-        //执行之前先清空之前发布的内容
-        File(LOCAL_REPO_PATH).deleteRecursively()
-    }
-    // 2 打包,依赖任务publishSparkPublicationToLocalRepoRepository
-//    val zipForSignedPublication by tasks.registering(Zip::class) {
-//        group = "5hmla"
-//        dependsOn(publishToLocalRepo)
-//        archiveBaseName = projectName
-//        destinationDirectory.set(file("build/zip"))
-//        from(LOCAL_REPO_PATH) {
-//            include("**/*")
-//        }
-//    }
-    val zipForSignedPublicationTask = tasks.register<Zip>("zipForSignedPublication") {
-        group = "5hmla"
-        dependsOn(publishToLocalRepo)
-        archiveBaseName = projectName
-        destinationDirectory.set(file("build/zip"))
-        from(LOCAL_REPO_PATH) {
-            include("**/*")
-        }
-    }
-
-    // 3 上传任务 publishToMavenCentral
-    tasks.register<PublishToMavenCentralTask>("publishToMavenCentral") {
-        group = "5hmla"
-        groupId = project.group.toString()
-        repositoryUsername = System.getenv("mavenCentralUsername")
-        repositoryPassword = System.getenv("mavenCentralPassword")
-        from(zipForSignedPublicationTask)
-    }
-
-    //最后, 执行task即可 ./gradlew publishToMavenCentral
-    println("✨ publishToMavenCentral任务配置成功! ./gradlew publishToMavenCentral")
-}
-
-private fun Project.signingPublications(publishing: PublishingExtension) {
-    if (!pluginManager.hasPlugin("signing")) {
-        pluginManager.apply("signing")
-    }
-    //gpg --armor --export-secret-key 查看signingKey
-    //https://stackoverflow.com/questions/70929152/gradle-signing-plugin
-    extensions.getByType<SigningExtension>().apply {
-        val signingKey = System.getenv("SIGN_GPG_KEY")
-        val signingPassword = System.getenv("SIGN_GPG_PASSWORD")
-        useInMemoryPgpKeys(signingKey, signingPassword)
-        sign(publishing.publications["Spark"])
-    }
-}
-
-
-private fun TaskContainer.emptyJavadocJar() {
-    register<Jar>("javadocEmptyJar") {
-//        from(named("javadoc"))//任务生成javadoc,空的javadoc这里就不执行任务即可
-        archiveClassifier.set("javadoc")
-    }
-}
-
-private fun TaskContainer.emptySourceJar() {
-    register<Jar>("sourcesEmptyJar") {
-        archiveClassifier.set("sources")
-    }
-}
-
-private fun LibraryExtension.androidLibPublishing(component: String = "release") {
-    publishing {
-        singleVariant(component) {
-            withJavadocJar()
-            withSourcesJar()
-        }
-    }
-}
-
-private fun JavaPluginExtension.javaLibPublishing() {
-    //kotlin找不到JavadocJar和SourcesJar任务
-    withJavadocJar()
-    withSourcesJar()
-}
-
-//<editor-fold desc="maven-publish">
-fun Project.url(): Lazy<String> = lazy {
-    val stdout = ByteArrayOutputStream()
-    exec {
-        commandLine("git", "config", "--get", "remote.origin.url")
-        standardOutput = stdout
-    }
-    val remoteUrl = stdout.toString().trim()
-    debug("Remote URL: ${remoteUrl.removeSuffix(".git")}")
-    remoteUrl
-}
-
 fun Project.publishJava5hmlA(libDescription: String, withSource: Boolean = false): PublishingExtension {
     return publish5hmlA(libDescription, "java", withSource)
 }
 
-fun Project.publish5hmlA(libDescription: String, component: String = "debug", withSource: Boolean = false): PublishingExtension {
+//<editor-fold desc="MavenCentral-publish">
+/**
+ * ## 发布 library 的基本配置
+ * - 配置发布仓库地址，配置了发布到GitHub，本地Maven路径为：build/repo
+ * - 配置了名为 Spark 的 publication
+ * - 配置发布的component
+ * - 配置是否需要sourceJar
+ * - 配置library的描述
+ */
+fun Project.publish5hmlA(
+    libDescription: String,
+    component: String = "debug",
+    withSource: Boolean = false
+): PublishingExtension {
     val projectName = name
     if (!pluginManager.hasPlugin("maven-publish")) {
         pluginManager.apply("maven-publish")
@@ -180,8 +68,7 @@ fun Project.publish5hmlA(libDescription: String, component: String = "debug", wi
         tasks.emptyJavadocJar()
     }
     val gitUrl: String by url()
-    val publishingExtension = extensions.getByType<PublishingExtension>()
-    publishingExtension.apply {
+    val publishingExtension = setPublishing {
         publications {
             repositories {
                 maven {
@@ -193,7 +80,7 @@ fun Project.publish5hmlA(libDescription: String, component: String = "debug", wi
                     }
                 }
                 maven {
-                    name = "LocalRepo"
+                    name = "JuneLocal"
                     setUrl(LOCAL_REPO_PATH)
                 }
             }
@@ -259,7 +146,131 @@ fun Project.publish5hmlA(libDescription: String, component: String = "debug", wi
     }
     return publishingExtension
 }
+
+/**
+ * 签名配置
+ */
+private fun Project.signingPublications(publishing: PublishingExtension) {
+    if (!pluginManager.hasPlugin("signing")) {
+        pluginManager.apply("signing")
+    }
+    //gpg --armor --export-secret-key 查看signingKey
+    //https://stackoverflow.com/questions/70929152/gradle-signing-plugin
+    extensions.getByType<SigningExtension>().apply {
+        val signingKey = System.getenv("SIGN_GPG_KEY")
+        val signingPassword = System.getenv("SIGN_GPG_PASSWORD")
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(publishing.publications["Spark"])
+    }
+}
+
+/**
+ * ## 配置 library 发布到 MavenCentral
+ * - 需要给publications签名，给jar,doc.jar,pom.xml等文件签名
+ * - 需要配置MavenCentral的账号密码
+ */
+fun Project.publishMavenCentral(libDescription: String, component: String = "debug", withSource: Boolean = false) {
+    val projectName = name
+
+    //配置publish任务, 发布到MavenCentral必须要有sources.jar和javadoc.jar
+    val publishing = publish5hmlA(libDescription, component, withSource)
+
+    //配置签名
+    signingPublications(publishing)
+    //配置压缩任务，后续上传需要
+    //1 publishSparkPublicationToLocalRepoRepository
+    //2 zipForSignedPublication
+    //3 publishToMavenCentral
+    // 1 发布,签名
+    //这个task会自动依赖signSparkPublication
+    //https://docs.gradle.org/current/userguide/kotlin_dsl.html
+//    val publishSparkPublicationToLocalRepoRepository by tasks.existing {
+//        //执行之前先清空之前发布的内容
+//        File(LOCAL_REPO_PATH).deleteRecursively()
+//    }
+    val publishToLocalRepo = tasks["publishSparkPublicationToLocalRepoRepository"].doFirst {
+        //执行之前先清空之前发布的内容
+        File(LOCAL_REPO_PATH).deleteRecursively()
+    }
+    // 2 打包,依赖任务publishSparkPublicationToLocalRepoRepository
+//    val zipForSignedPublication by tasks.registering(Zip::class) {
+//        group = "5hmla"
+//        dependsOn(publishToLocalRepo)
+//        archiveBaseName = projectName
+//        destinationDirectory.set(file("build/zip"))
+//        from(LOCAL_REPO_PATH) {
+//            include("**/*")
+//        }
+//    }
+    val zipForSignedPublicationTask = tasks.register<Zip>("zipForSignedPublication") {
+        group = "5hmla"
+        dependsOn(publishToLocalRepo)
+        archiveBaseName = projectName
+        destinationDirectory.set(file("build/zip"))
+        from(LOCAL_REPO_PATH) {
+            include("**/*")
+        }
+    }
+
+    // 3 上传任务 publishToMavenCentral
+    tasks.register<PublishToMavenCentralTask>("publishToMavenCentral") {
+        group = "5hmla"
+        groupId = project.group.toString()
+        repositoryUsername = System.getenv("mavenCentralUsername")
+        repositoryPassword = System.getenv("mavenCentralPassword")
+        from(zipForSignedPublicationTask)
+    }
+
+    //最后, 执行task即可 ./gradlew publishToMavenCentral
+    println("✨ publishToMavenCentral任务配置成功! ./gradlew publishToMavenCentral")
+}
 //</editor-fold>
+
+//查看某个task的依赖关系
+//tasks["your task"].taskDependencies.getDependencies(tasks["your task"]).forEach {
+//    println(it.name)
+//}
+fun Task.showDependencies(action: ((Task) -> Unit)? = null) {
+    taskDependencies.getDependencies(this).forEach {
+        if (action != null) {
+            action.invoke(it)
+        } else {
+            println("$name dependsOn: ${it.name}")
+        }
+    }
+}
+
+fun Project.setPublishing(config: PublishingExtension.() -> Unit): PublishingExtension {
+    return extensions.getByType<PublishingExtension>().apply(config)
+}
+
+private fun TaskContainer.emptyJavadocJar() {
+    register<Jar>("javadocEmptyJar") {
+//        from(named("javadoc"))//任务生成javadoc,空的javadoc这里就不执行任务即可
+        archiveClassifier.set("javadoc")
+    }
+}
+
+private fun TaskContainer.emptySourceJar() {
+    register<Jar>("sourcesEmptyJar") {
+        archiveClassifier.set("sources")
+    }
+}
+
+private fun LibraryExtension.androidLibPublishing(component: String = "debug") {
+    publishing {
+        singleVariant(component) {
+            withJavadocJar()
+            withSourcesJar()
+        }
+    }
+}
+
+private fun JavaPluginExtension.javaLibPublishing() {
+    //kotlin找不到JavadocJar和SourcesJar任务
+    withJavadocJar()
+    withSourcesJar()
+}
 
 const val GroupIdMavenCentral = "io.github.5gene"
 const val GroupIdGradlePlugin = "io.github.5hmlA"

@@ -1,3 +1,4 @@
+
 plugins {
     `kotlin-dsl`
     //https://plugins.gradle.org/plugin/org.gradle.kotlin.kotlin-dsl
@@ -39,8 +40,8 @@ repositories {
 //For both the JVM and Android projects, it's possible to define options using the project Kotlin extension DSL:
 kotlin {
     compilerOptions {
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
-        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
     }
 }
 
@@ -91,9 +92,20 @@ tasks.findByName("publishPlugins")?.doFirst {
     }
 }
 
+publishing {
+    //MavenLocal本地地址默认为："${System.getProperty("user.home")}/.m2/repository"
+    repositories {
+        maven {
+            name = "JuneLocal"
+            setUrl("build/repo")
+        }
+    }
+}
+
 gradlePlugin {
     website = "https://github.com/5hmlA/conventions"
     vcsUrl = "https://github.com/5hmlA/conventions"
+
     plugins {
         register("android-config") {
             id = "${group}.android"

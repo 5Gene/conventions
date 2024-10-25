@@ -182,12 +182,12 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
         //17 --> 9
         //jvmTarget.set(JvmTarget.JVM_17)
         val jvmTargetVersion = JvmTarget.values()[javaVersion - 8]
-        println("KotlinJvmCompilerOptions -> javaVersion: ${jvmTargetVersion.name}")
+//        println("KotlinJvmCompilerOptions -> javaVersion: ${jvmTargetVersion.name}")
         jvmTarget.set(jvmTargetVersion)
 
-        freeCompilerArgs.add("-Xcontext-receivers")
-        //apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
-        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+        //languageVersion 和 apiVersion 只是对代码语法和 API 可用性的指示
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
     }
 
     override fun dependenciesConfig(project: Project): DependencyHandlerScope.(VersionCatalog) -> Unit = { catalog ->
@@ -220,6 +220,7 @@ class AndroidRoom(pre: Android? = null) : BaseAndroid(pre) {
         super.pluginConfigs(project).invoke(this, it)
         apply("androidx.room")
         apply("com.google.devtools.ksp")
+
         //https://kotlinlang.org/docs/ksp-quickstart.html#create-a-processor-of-your-own
         project.ksp {
             //room 配置 生成 Kotlin 源文件，而非 Java 代码。需要 KSP。默认值为 false。 有关详情，请参阅版本 2.6.0 的说明
@@ -247,8 +248,6 @@ class AndroidRoom(pre: Android? = null) : BaseAndroid(pre) {
             add("implementation", it)
         }
         catalog.findLibrary("androidx-room-compiler").ifPresent {
-//            add("annotationProcessor", it)
-            // To use Kotlin Symbol Processing (KSP)
             add("ksp", it)
         }
     }

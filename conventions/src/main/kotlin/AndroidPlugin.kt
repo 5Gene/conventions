@@ -4,7 +4,6 @@ import org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactReposi
 import org.gradle.api.plugins.PluginManager
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.buildscript
-import org.gradle.kotlin.dsl.repositories
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import wing.*
 import java.io.File
@@ -59,22 +58,18 @@ open class AndroidPlugin : AbsAndroidPlugin() {
 
     private fun Project.repoConfig() {
         buildscript {
-            repositories.removeAll { true }
-            repositories {
-                chinaRepos()
+            try {
+                repositories.chinaRepos()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
             repositories.forEach {
                 log("> Project.buildscript repositories ${it.name} >  =========================")
             }
         }
 
-        repositories.forEach {
-            log("> Project.repositories ${it.name} > ${it.javaClass} =========================")
-        }
         try {
-            repositories {
-                chinaRepos()
-            }
+            repositories.chinaRepos()
         } catch (e: Exception) {
             log(
                 """
@@ -88,7 +83,7 @@ open class AndroidPlugin : AbsAndroidPlugin() {
             )
         }
         repositories.forEach {
-            log("> Project.repositories ${it.name} > ${(it as DefaultMavenArtifactRepository).url} =========================")
+            log("🔔> Project.repositories ${it.name} > ${(it as DefaultMavenArtifactRepository).url} =========================")
         }
     }
 }

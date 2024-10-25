@@ -15,6 +15,7 @@
  */
 
 @file:Suppress("UNCHECKED_CAST")
+
 package wing
 
 import com.android.build.api.dsl.ApplicationExtension
@@ -32,6 +33,7 @@ import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import java.io.ByteArrayOutputStream
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
 import kotlin.jvm.optionals.getOrNull
@@ -109,7 +111,7 @@ fun VariantDimension.defineResBool(name: String, value: String) {
     resValue("bool", name, value)
 }
 
-fun Project.changeAPkName(name: String) {
+fun Project.changeApkName(name: String) {
     setProperty("archivesBaseName", name)
 }
 
@@ -125,14 +127,36 @@ fun AndroidCommonExtension.srcDirs(vararg srcDirs: Any) {
     }
 }
 
-fun RepositoryHandler.chinaRepos() {
-    maven {
-        name = "tencent"
-        isAllowInsecureProtocol = true
-        setUrl("https://mirrors.tencent.com/nexus/repository/maven-public/")
+fun RepositoryHandler.addRepositoryFirst(addRepoAction: RepositoryHandler.() -> Unit) {
+    addRepoAction()
+    //拿到所有仓库
+    //val repositories = this.toList()
+    if (size > 1) {
+        val removeLast = removeLast()
+        addFirst(removeLast)
     }
-    google()
-    mavenCentral()
+}
+
+fun RepositoryHandler.chinaRepos() {
+    if (isEmpty()) {
+        //google和maven应该都是默认添加的
+        //name:Google
+        google()
+        //name:MavenRepo
+        mavenCentral()
+    }
+    if (findByName("5hmlA") != null) {
+        //已经设置过不再需要设置
+        return
+    }
+    addRepositoryFirst {
+        maven {
+            name = "tencent"
+            isAllowInsecureProtocol = true
+            setUrl("https://mirrors.tencent.com/nexus/repository/maven-public/")
+        }
+    }
+
     //限定指定规则的group只访问5hmlA仓库
     maven {
         name = "5hmlA"
@@ -152,6 +176,11 @@ fun RepositoryHandler.chinaRepos() {
             }
         }
     }
+    //content有这些
+    // excludeGroup：在这个库中不搜索这个group，如my.company，但是只会匹配my.company，如果是my.company.module则不匹配
+    // excludeGroupByRegex：类似excludeGroup，但是可以使用正则表达式，如my.company.*可以匹配my.company和my.company.module。
+    // includeGroup：在这个库中搜索包含这个group，类似excludeGroup精确匹配
+    // includeGroupByRegex：使用方法同excludeGroupByRegex
 }
 
 fun java.nio.file.Path.isGradleProject(): Boolean = if (!isDirectory()) false else listDirectoryEntries().any {
@@ -195,3 +224,14 @@ fun Project.logTasks() {
 fun VersionCatalog?.findVersionStr(alias: String) = this?.findVersion(alias)?.getOrNull()?.toString()
 
 fun VersionCatalog.getVersion(alias: String) = findVersion(alias).get().requiredVersion
+
+fun Project.url(): Lazy<String> = lazy {
+    val stdout = ByteArrayOutputStream()
+    exec {
+        commandLine("git", "config", "--get", "remote.origin.url")
+        standardOutput = stdout
+    }
+    val remoteUrl = stdout.toString().trim()
+    debug("Remote URL: ${remoteUrl.removeSuffix(".git")}")
+    remoteUrl
+}
