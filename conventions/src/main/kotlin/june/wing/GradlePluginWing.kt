@@ -27,7 +27,7 @@ fun Project.publishGradlePluginSet(action: Action<in NamedDomainObjectContainer<
 
     val gitUrl by url()
 
-    extensions.getByType(GradlePluginDevelopmentExtension::class.java).apply {
+    val pluginDevelopmentExtension = extensions.getByType(GradlePluginDevelopmentExtension::class.java).apply {
         website = gitUrl
         vcsUrl = gitUrl
 
@@ -47,7 +47,7 @@ fun Project.publishGradlePluginSet(action: Action<in NamedDomainObjectContainer<
             debug(">> doFirst on $this ${this.javaClass}")
             //不太明白为什么这里也报错 Extension of type 'GradlePluginDevelopmentExtension' does not exist
             //因为取错对象的extensions了，这里的this是com.gradle.publish.PublishTask_Decorated, 这个task也有extensions
-            val plugins = extensions.getByType<GradlePluginDevelopmentExtension>().plugins
+            val plugins = pluginDevelopmentExtension.plugins
             plugins.removeIf {
                 //移除不能上传的插件
                 it.displayName.isNullOrEmpty()
