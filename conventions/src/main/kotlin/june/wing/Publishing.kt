@@ -14,8 +14,8 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.SigningExtension
 import java.io.File
 
-const val LOCAL_REPO_PATH = ".maven"
-private const val LOCAL_REPO_NAME = "JuneLocal"
+internal const val LOCAL_REPO_PATH = ".maven"
+internal const val LOCAL_REPO_NAME = "JuneLocal"
 
 /**
  * - 1 配置publish

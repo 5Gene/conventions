@@ -30,24 +30,12 @@ fun Project.publishGradlePluginSet(emptySource: Boolean = true, action: Action<i
         pluginManager.apply("maven-publish")
     }
 
-    //For both the JVM and june.plugins.android.Android projects, it's possible to define options using the project Kotlin extension DSL:
-    kotlinExtension?.apply {
-        compilerOptions {
-            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-        }
-    }
-
-    dependencies {
-        add("compileOnly", kotlin(module = "gradle-plugin-api"))
-    }
-
     //MavenLocal本地地址默认为："${System.getProperty("user.home")}/.m2/repository"
     setPublishing {
         //MavenLocal本地地址默认为："${System.getProperty("user.home")}/.m2/repository"
         repositories {
             maven {
-                name = "JuneLocal"
+                name = LOCAL_REPO_NAME
                 setUrl(LOCAL_REPO_PATH)
             }
         }
