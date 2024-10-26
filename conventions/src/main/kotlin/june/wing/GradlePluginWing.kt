@@ -12,15 +12,7 @@ import org.gradle.plugin.devel.PluginDeclaration
  */
 fun Project.publishGradlePluginSet(action: Action<in NamedDomainObjectContainer<PluginDeclaration>>) {
 
-    if (!pluginManager.hasPlugin("com.gradle.plugin-publish")) {
-        buildscript {
-            dependencies {
-                classpath("com.gradle.publish:plugin-publish-plugin:1.3.0")
-            }
-        }
-
-        apply(plugin = "com.gradle.plugin-publish")
-    }
+    apply(plugin = "com.gradle.plugin-publish")
 
     //MavenLocal本地地址默认为："${System.getProperty("user.home")}/.m2/repository"
     setPublishing {

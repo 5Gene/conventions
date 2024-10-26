@@ -31,7 +31,7 @@ dependencies {
 //    kotlin("gradle-plugin", "1.9.24") == org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24
 
     compileOnly(libs.plugin.publish)
-    compileOnly(kotlin(module = "gradle-plugin", version = vcl.versions.kotlin.get()))
+    implementation(kotlin(module = "gradle-plugin", version = vcl.versions.kotlin.get()))
     implementation("com.google.protobuf:protobuf-gradle-plugin:${vcl.versions.protobuf.plugin.get()}")
     testImplementation(vcl.test.junit)
 //    compileOnly(gradleKotlinDsl())
