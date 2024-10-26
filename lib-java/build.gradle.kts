@@ -1,4 +1,4 @@
-import wing.publish5hmlA
+import june.wing.publish5hmlA
 
 plugins {
     alias(vcl.plugins.kotlin.jvm)
@@ -24,4 +24,4 @@ sourceSets.main {
 
 //publishKotlinMavenCentral("lib-java-test")
 publish5hmlA("test", "kotlin", false)
-//publishJavaMavenCentral("lib-java-test", true)
+//publishJavaMavenCentral("lib-java-test")

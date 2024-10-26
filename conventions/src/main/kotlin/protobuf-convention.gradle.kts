@@ -1,5 +1,5 @@
-import wing.log
-import wing.vlibs
+import june.wing.log
+import june.wing.vlibs
 
 //https://docs.gradle.org/current/userguide/custom_plugins.html
 //预编译脚本插件

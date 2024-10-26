@@ -1,4 +1,4 @@
-import wing.publish5hmlA
+import june.wing.publish5hmlA
 
 plugins {
     alias(vcl.plugins.android.library) apply true
