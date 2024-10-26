@@ -173,3 +173,6 @@ gradlePlugin {
 tasks.getByName("publishPlugins").doLast {
     println("插件发布成功，点击🔗查看：https://plugins.gradle.org/")
 }
+
+//git tag v2.1.14
+//git push origin v2.1.14
