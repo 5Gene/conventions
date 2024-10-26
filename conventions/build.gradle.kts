@@ -6,30 +6,9 @@ plugins {
 //    id("org.gradle.kotlin.kotlin-dsl") version "4.4.0"
     `kotlin-dsl-precompiled-script-plugins`
 //    `java-gradle-plugin`
-//    kotlin("jvm") version "1.9.22"
 //    `maven-publish`
     //define『plugin portal -> publishPlugins』 task
-    id("com.gradle.plugin-publish") version "1.2.1"
-}
-
-//主动开启Junit,system.out日志输出显示在控制台,默认控制台不显示system.out输出的日志
-//https://docs.gradle.org/current/kotlin-dsl/gradle/org.gradle.api.tasks.testing/-abstract-test-task/test-logging.html
-//https://stackoverflow.com/questions/9356543/logging-while-testing-through-gradle
-tasks.withType<Test>() {
-    testLogging {
-        showStandardStreams = true
-//        testLogging.exceptionFormat = TestExceptionFormat.FULL
-    }
-}
-
-fun String.print() {
-    println("\u001B[93m✨ $name >> ${this}\u001B[0m")
-}
-
-fun sysprop(name: String, def: String): String {
-//    getProperties中所谓的"system properties"其实是指"java system"，而非"operation system"，概念完全不同，使用getProperties获得的其实是虚拟机的变量形如： -Djavaxxxx。
-//    getenv(): 访问某个系统的环境变量(operation system properties)
-    return System.getProperty(name, def)
+    id("com.gradle.plugin-publish") version "1.3.0"
 }
 
 repositories {
@@ -37,18 +16,9 @@ repositories {
     google()
 }
 
-//For both the JVM and Android projects, it's possible to define options using the project Kotlin extension DSL:
-kotlin {
-    compilerOptions {
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
-        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
-    }
-}
-
 dependencies {
     //includeBuild()中拿不到项目的properties，这里通过System.property取
-//    编译插件的时候就会用到，不需要配置，编译的时候修改就行了
-//    val agp = sysprop("dep.agp.ver", "8.2.0")
+    //编译插件的时候就会用到，不需要配置，编译的时候修改就行了
     compileOnly("com.android.tools.build:gradle-api:${vcl.versions.android.gradle.plugin.get()}")
     //compileOnly("com.android.tools.build:gradle:${libs.versions.android.gradle.plugin.get()}")
     //gradle plugin id 规则 plugin_id:plugin_id.gradle.plugin:version
@@ -60,18 +30,13 @@ dependencies {
 //    https://github.com/JetBrains/kotlin/
 //    kotlin("gradle-plugin", "1.9.24") == org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24
 
+    compileOnly(libs.plugin.publish)
     compileOnly(kotlin(module = "gradle-plugin", version = vcl.versions.kotlin.get()))
     implementation("com.google.protobuf:protobuf-gradle-plugin:${vcl.versions.protobuf.plugin.get()}")
-    implementation("com.gradle.publish:plugin-publish-plugin:1.2.1")
     testImplementation(vcl.test.junit)
 //    compileOnly(gradleKotlinDsl())
     // help->dependencies只会输出implementation的库的依赖关系
 }
-
-
-//"======== class = ${this.javaClass}".print()
-//"======== superclass= ${this.javaClass.superclass}".print()
-//"======== rootProject= $rootProject".print()
 
 group = "io.github.5hmlA"
 version = libs.versions.gene.conventions.get()
@@ -137,8 +102,8 @@ gradlePlugin {
             implementationClass = "june.plugins.android.AGPKnifePlugin"
         }
 
-//        因为xxx.gradle.kts注册插件的时候不会设置displayName 尝试这里覆盖注册，结果无效，
-//        publishTask里会检测所有的plugin,被认为是重复注册了直接报错,所以同一个plugin再创建个id
+        //因为xxx.gradle.kts注册插件的时候不会设置displayName 尝试这里覆盖注册，结果无效，
+        //publishTask里会检测所有的plugin,被认为是重复注册了直接报错,所以同一个plugin再创建个id
         create("proto-convention") {
             id = "${group}.protobuf-convention"
             displayName = "protobuf convention plugin"
@@ -173,6 +138,21 @@ gradlePlugin {
 tasks.getByName("publishPlugins").doLast {
     println("插件发布成功，点击🔗查看：https://plugins.gradle.org/")
 }
+
+//主动开启Junit,system.out日志输出显示在控制台,默认控制台不显示system.out输出的日志
+//https://docs.gradle.org/current/kotlin-dsl/gradle/org.gradle.api.tasks.testing/-abstract-test-task/test-logging.html
+//https://stackoverflow.com/questions/9356543/logging-while-testing-through-gradle
+tasks.withType<Test>() {
+    testLogging {
+        showStandardStreams = true
+//        testLogging.exceptionFormat = TestExceptionFormat.FULL
+    }
+}
+
+fun String.print() {
+    println("\u001B[93m✨ $name >> ${this}\u001B[0m")
+}
+
 
 //创建tag
 //git tag v2.1

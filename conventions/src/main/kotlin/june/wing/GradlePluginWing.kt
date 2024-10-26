@@ -14,17 +14,12 @@ fun Project.publishGradlePluginSet(action: Action<in NamedDomainObjectContainer<
 
     if (!pluginManager.hasPlugin("com.gradle.plugin-publish")) {
         buildscript {
-            repositories {
-                maven {
-                    url = uri("https://plugins.gradle.org/m2/")
-                }
-            }
             dependencies {
-                classpath("com.gradle.publish:plugin-publish-plugin:1.2.1")
+                classpath("com.gradle.publish:plugin-publish-plugin:1.3.0")
             }
         }
-        pluginManager.apply("com.gradle.plugin-publish")
-        pluginManager.apply("maven-publish")
+
+        apply(plugin = "com.gradle.plugin-publish")
     }
 
     //MavenLocal本地地址默认为："${System.getProperty("user.home")}/.m2/repository"

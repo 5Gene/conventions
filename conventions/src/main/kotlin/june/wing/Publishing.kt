@@ -169,6 +169,7 @@ private fun Project.signingPublications(publishing: PublishingExtension) {
  * ## 配置 library 发布到 MavenCentral
  * - 需要给publications签名，给jar,doc.jar,pom.xml等文件签名
  * - 需要配置MavenCentral的账号密码
+ * - 发布到MavenCentral必须要有javadoc.jar,source.jar
  */
 fun Project.publishMavenCentral(libDescription: String, component: String = "debug", withSource: Boolean = false) {
     val projectName = name
