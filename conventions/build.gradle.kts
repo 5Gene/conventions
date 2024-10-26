@@ -174,5 +174,16 @@ tasks.getByName("publishPlugins").doLast {
     println("插件发布成功，点击🔗查看：https://plugins.gradle.org/")
 }
 
-//git tag v2.1.14
-//git push origin v2.1.14
+//创建tag
+//git tag v2.1
+//git push origin v2.1
+
+//查看/删除远端所有tag
+//git ls-remote --tags origin
+//git push origin --delete $(git tag -l)
+
+//查看/删除本地所有tag
+//git tag
+//git tag -d $(git tag)
+
+
