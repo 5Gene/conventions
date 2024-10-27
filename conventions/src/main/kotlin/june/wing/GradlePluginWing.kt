@@ -10,9 +10,11 @@ import org.gradle.plugin.devel.PluginDeclaration
 /**
  * gradle插件发布配置
  */
-fun Project.publishGradlePluginSet(action: Action<in NamedDomainObjectContainer<PluginDeclaration>>) {
+fun Project.publishGradlePluginSet(sourceJarEmpty: Boolean = true, action: Action<in NamedDomainObjectContainer<PluginDeclaration>>) {
 
-    apply(plugin = "com.gradle.plugin-publish")
+    if (sourceJarEmpty) {
+        jarTaskEmptyJar("sourcesJar")
+    }
 
     //MavenLocal本地地址默认为："${System.getProperty("user.home")}/.m2/repository"
     setPublishing {

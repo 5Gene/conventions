@@ -28,10 +28,10 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.tasks.bundling.Jar
+import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import java.io.ByteArrayOutputStream
 import kotlin.io.path.isDirectory
@@ -198,14 +198,20 @@ fun Project.property(name: String, def: Any): String {
 }
 
 /**
- * 把已有的sourcesJar任务修改为不打包任何内容
+ * 把已有的Jar类型任务修改为不打包任何内容
  */
-fun Project.sourceJarEmpty() {
-    afterEvaluate {
-        //把已有的sourcesJar任务排查所有内容
-        tasks.named<Jar>("sourcesJar") {
-            exclude("**/*")
+fun Project.jarTaskEmptyJar(vararg jarTaskNames: String, whenReady: (TaskExecutionGraph.() -> Unit)? = null) {
+    val projectName = name
+    gradle.taskGraph.whenReady {
+        jarTaskNames.forEach {
+            val task = (tasks.findByName(it) as? Jar)?.exclude("**/*")
+            if (task == null) {
+                println("💣 💥【jarTaskEmptyJar】 Task with name '$it' not found in project:$projectName   ")
+            } else {
+                println("🔔>【jarTaskEmptyJar】 Task with name '$it' is empty in project:$projectName   ")
+            }
         }
+        whenReady?.invoke(this)
     }
 }
 

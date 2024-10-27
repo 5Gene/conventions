@@ -8,11 +8,11 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.TaskContainer
-import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.SigningExtension
 import java.io.File
+import java.util.Locale
 
 internal const val LOCAL_REPO_PATH = ".maven"
 internal const val LOCAL_REPO_NAME = "JuneLocal"
@@ -24,8 +24,6 @@ internal const val LOCAL_REPO_NAME = "JuneLocal"
  */
 fun Project.publishJavaMavenCentral(libDescription: String, withSource: Boolean = false) =
     publishMavenCentral(libDescription, "java", withSource)
-
-fun Project.publishKotlinMavenCentral(libDescription: String) = publishMavenCentral(libDescription, "kotlin", false)
 
 fun Project.publishAndroidMavenCentral(libDescription: String) = publishMavenCentral(libDescription, "debug", false)
 
@@ -51,23 +49,39 @@ fun Project.publish5hmlA(
     if (!pluginManager.hasPlugin("maven-publish")) {
         pluginManager.apply("maven-publish")
     }
-    if (withSource) {
-        //配置sources.jar 和 javadoc.jar, 上传到MavenCentral必备
-        androidLibExtension?.androidLibPublishing(component) ?: javaExtension?.javaLibPublishing()
-    } else {
-        afterEvaluate {
-            tasks.findByName("${component}SourcesJar")?.let {
-                println("【$projectName】android中默认会执行${component}SourcesJar，不打包源码的时候需要手动去掉")
-//                it.setOnlyIf { false }//可以跳过任务执行，但是任务还是在，generateMetadataFileForSparkPublication执行的时候还是会用到
-//                it.didWork = false//无效不能跳过任务
-                it.enabled = false
+    androidLibExtension?.apply {
+        androidLibPublishing(component)
+        if (!withSource) {
+            //android相关task
+            //debugSourcesJar 是 Android Gradle Plugin 默认任务，打包的内容仅包含与 debug 变体相关的源码文件。
+            //whenTaskAdded -> debugSourcesJar > Jar_Decorated.class
+            //whenTaskAdded -> releaseSourcesJar > Jar_Decorated.class
+
+            //whenTaskAdded -> sourceDebugJar > SourceJarTask_Decorated.class
+            //whenTaskAdded -> javaDocDebugJar > JavaDocJarTask_Decorated.class
+            jarTaskEmptyJar(
+                "source${component.firstCharCapitalize()}Jar",
+                "javaDoc${component.firstCharCapitalize()}Jar",
+            ) {
+                tasks.findByName("javaDoc${component.firstCharCapitalize()}Generation")?.let { task ->
+                    task.enabled = false
+                }
             }
-            //把已有的sourcesJar任务排查所有内容
-            (tasks.findByName("sourcesJar") as? Jar)?.exclude("**/*")
         }
-        tasks.emptySourceJar()
-        tasks.emptyJavadocJar()
+    } ?: javaExtension?.apply {
+        javaLibPublishing()
+        if (!withSource) {
+            jarTaskEmptyJar(
+                "sourcesJar",
+                "javadocJar",
+            ) {
+                tasks.findByName("javaDocGeneration")?.let { task ->
+                    task.enabled = false
+                }
+            }
+        }
     }
+
     val gitUrl: String by url()
     val publishingExtension = setPublishing {
         publications {
@@ -100,18 +114,10 @@ fun Project.publish5hmlA(
                         components.forEach {
                             println("【$projectName】afterEvaluate-> components-> ${it.name}")
                         }
-                        //from(components.getByName(component))
                         from(components[component])
                         //下面的方式在pom中【不会】自动生成依赖
                         //artifact(tasks.getByName("bundleDebugAar"))
                     }
-                }
-
-                if (!withSource) {
-                    println("【$projectName】publish whit no source jar".green)
-                    //必须是jar所以要把javadoc打包成jar
-                    artifact(tasks.named("javadocEmptyJar"))
-                    artifact(tasks.named("sourcesEmptyJar"))
                 }
 
                 //下面配置会出现 Cannot publish module metadata because an artifact from the 'java' component has been removed
@@ -228,6 +234,38 @@ fun Project.publishMavenCentral(libDescription: String, component: String = "deb
 }
 //</editor-fold>
 
+
+fun Project.setPublishing(config: PublishingExtension.() -> Unit): PublishingExtension {
+    return extensions.getByType<PublishingExtension>().apply(config)
+}
+
+private fun LibraryExtension.androidLibPublishing(component: String = "debug") {
+    println("✨ androidLibPublishing")
+    publishing {
+        singleVariant(component) {
+            withJavadocJar()
+            withSourcesJar()
+        }
+    }
+}
+
+
+private fun JavaPluginExtension.javaLibPublishing() {
+    println("✨ javaLibPublishing")
+    //kotlin找不到JavadocJar和SourcesJar任务
+    withJavadocJar()
+    withSourcesJar()
+}
+
+fun Project.addLocalRepository() {
+    repositories {
+        maven {
+            name = LOCAL_REPO_NAME
+            setUrl(LOCAL_REPO_PATH)
+        }
+    }
+}
+
 //查看某个task的依赖关系
 //tasks["your task"].taskDependencies.getDependencies(tasks["your task"]).forEach {
 //    println(it.name)
@@ -242,46 +280,14 @@ fun Task.showDependencies(action: ((Task) -> Unit)? = null) {
     }
 }
 
-fun Project.setPublishing(config: PublishingExtension.() -> Unit): PublishingExtension {
-    return extensions.getByType<PublishingExtension>().apply(config)
+fun String.showDependencies(tasks: TaskContainer) {
+    tasks.findByName(this)?.showDependencies()
 }
 
-private fun TaskContainer.emptyJavadocJar() {
-    register<Jar>("javadocEmptyJar") {
-//        from(named("javadoc"))//任务生成javadoc,空的javadoc这里就不执行任务即可
-        archiveClassifier.set("javadoc")
-    }
-}
-
-private fun TaskContainer.emptySourceJar() {
-    register<Jar>("sourcesEmptyJar") {
-        archiveClassifier.set("sources")
-    }
-}
-
-private fun LibraryExtension.androidLibPublishing(component: String = "debug") {
-    publishing {
-        singleVariant(component) {
-            withJavadocJar()
-            withSourcesJar()
-        }
-    }
-}
-
-private fun JavaPluginExtension.javaLibPublishing() {
-    //kotlin找不到JavadocJar和SourcesJar任务
-    withJavadocJar()
-    withSourcesJar()
-}
-
-public fun Project.addLocalRepository() {
-    repositories {
-        maven {
-            name = LOCAL_REPO_NAME
-            setUrl(LOCAL_REPO_PATH)
-        }
-    }
-}
+/**
+ * 第一个字符大写
+ */
+fun String.firstCharCapitalize(): String = this.replaceFirstChar { it.titlecase(Locale.getDefault()) }
 
 const val GroupIdMavenCentral = "io.github.5gene"
 const val GroupIdGradlePlugin = "io.github.5hmlA"

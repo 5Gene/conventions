@@ -41,22 +41,6 @@ dependencies {
 group = "io.github.5hmlA"
 version = libs.versions.gene.conventions.get()
 
-//插件推送之前 先去掉不符合规范的插件
-tasks.findByName("publishPlugins")?.doFirst {
-    //doFirst on task ':conventions:publishPlugins'
-    ">> doFirst on $this ${this.javaClass}".print()
-    //不太明白为什么这里也报错 Extension of type 'GradlePluginDevelopmentExtension' does not exist
-    //因为取错对象的extensions了，这里的this是com.gradle.publish.PublishTask_Decorated, 这个task也有extensions
-    val plugins = rootProject.extensions.getByType<GradlePluginDevelopmentExtension>().plugins
-    plugins.removeIf {
-        //移除不能上传的插件
-        it.displayName.isNullOrEmpty()
-    }
-    plugins.forEach {
-        "- plugin to publish > ${it.name} ${it.id} ${it.displayName}".print()
-    }
-}
-
 publishing {
     //MavenLocal本地地址默认为："${System.getProperty("user.home")}/.m2/repository"
     repositories {
@@ -133,6 +117,29 @@ gradlePlugin {
 //    https://plugins.gradle.org/docs/mirroring
 //    The URL to mirror is https://plugins.gradle.org/m2/
     "插件下载地址: https://plugins.gradle.org/m2/".print()
+}
+
+afterEvaluate {
+    //不打包源码
+    tasks.named<Jar>("sourcesJar") {
+        exclude("**/*")
+    }
+}
+
+//插件推送之前 先去掉不符合规范的插件
+tasks.findByName("publishPlugins")?.doFirst {
+    //doFirst on task ':conventions:publishPlugins'
+    ">> doFirst on $this ${this.javaClass}".print()
+    //不太明白为什么这里也报错 Extension of type 'GradlePluginDevelopmentExtension' does not exist
+    //因为取错对象的extensions了，这里的this是com.gradle.publish.PublishTask_Decorated, 这个task也有extensions
+    val plugins = rootProject.extensions.getByType<GradlePluginDevelopmentExtension>().plugins
+    plugins.removeIf {
+        //移除不能上传的插件
+        it.displayName.isNullOrEmpty()
+    }
+    plugins.forEach {
+        "- plugin to publish > ${it.name} ${it.id} ${it.displayName}".print()
+    }
 }
 
 tasks.getByName("publishPlugins").doLast {

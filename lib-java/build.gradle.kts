@@ -1,5 +1,6 @@
-import june.wing.publish5hmlA
+import june.wing.logTasks
 import june.wing.publishGradlePluginSet
+import june.wing.showDependencies
 import org.gradle.kotlin.dsl.assign
 
 plugins {
@@ -16,11 +17,13 @@ sourceSets.main {
 }
 
 group = "test.test"
-//publishKotlinMavenCentral("lib-java-test")
-publish5hmlA("test", "kotlin", false)
+
+logTasks()
+
+//publish5hmlA("test", "kotlin", false)
 //publishJavaMavenCentral("lib-java-test")
 
-publishGradlePluginSet {
+publishGradlePluginSet(false) {
     register("plugin-test") {
         id = "${group}.test"
         displayName = "gracle version catalog"
@@ -29,3 +32,6 @@ publishGradlePluginSet {
         implementationClass = "june.VCatalogPlugin"
     }
 }
+
+
+"publishSparkPublicationToJuneLocalRepository".showDependencies(tasks)

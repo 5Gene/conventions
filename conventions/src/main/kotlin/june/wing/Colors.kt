@@ -2,7 +2,7 @@ package june.wing
 
 import org.gradle.api.Project
 
-//🎉 📣 🎗️ 🔥 📜 💯 📸 🎲 🚀 💡 🔔 ☃️ ✨ 🔪
+//🎉 📣 🎗️ 🔥 📜 💯 📸 🎲 🚀 💡 🔔 ☃️ ✨ 🔪  💣 💥
 
 //以下是20种常见的颜色以及它们的 ANSI 转义码：
 
