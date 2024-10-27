@@ -141,7 +141,13 @@ fun RepositoryHandler.chinaRepos() {
     if (isEmpty()) {
         //google和maven应该都是默认添加的
         //name:Google
-        google()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
         //name:MavenRepo
         mavenCentral()
     }
@@ -154,6 +160,12 @@ fun RepositoryHandler.chinaRepos() {
             name = "tencent"
             isAllowInsecureProtocol = true
             setUrl("https://mirrors.tencent.com/nexus/repository/maven-public/")
+            content {
+                //https://blog.csdn.net/jklwan/article/details/99351808
+                excludeGroupByRegex("osp.spark.*")
+                excludeGroupByRegex("osp.june.*")
+                excludeGroupByRegex("osp.gene.*")
+            }
         }
     }
 
@@ -167,13 +179,13 @@ fun RepositoryHandler.chinaRepos() {
             username = "5hmlA"
             password =
                 "\u0067\u0068\u0070\u005f\u004f\u0043\u0042\u0045\u007a\u006a\u0052\u0069\u006e\u0043\u0065\u0048\u004c\u0068\u006b\u0052\u0036\u0056\u0061\u0041\u0074\u0068\u004f\u004a\u0059\u0042\u0047\u0044\u0073\u0049\u0032\u0070\u0064\u0064\u0069\u0066"
-            //只有以下规则的group才会访问5hmlA仓库
-            content {
-                //https://blog.csdn.net/jklwan/article/details/99351808
-                includeGroupByRegex("osp.spark.*")
-                includeGroupByRegex("osp.june.*")
-                includeGroupByRegex("osp.gene.*")
-            }
+        }
+        //只有以下规则的group才会访问5hmlA仓库
+        content {
+            //https://blog.csdn.net/jklwan/article/details/99351808
+            includeGroupByRegex("osp.spark.*")
+            includeGroupByRegex("osp.june.*")
+            includeGroupByRegex("osp.gene.*")
         }
     }
     //content有这些
