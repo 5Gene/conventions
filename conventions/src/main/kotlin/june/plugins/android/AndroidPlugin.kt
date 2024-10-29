@@ -7,10 +7,12 @@ import june.wing.chinaRepos
 import june.wing.log
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
+import org.gradle.api.initialization.resolve.RepositoriesMode
 import org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository
 import org.gradle.api.plugins.PluginManager
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.buildscript
+import org.gradle.kotlin.dsl.extra
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import java.io.File
 
@@ -63,6 +65,15 @@ open class AndroidPlugin : AbsAndroidPlugin() {
     }
 
     private fun Project.repoConfig() {
+        if (!project.gradle.extra.has("repositoriesMode")) {
+            return
+        }
+        val repositoriesMode = project.gradle.extra["repositoriesMode"]
+        if (repositoriesMode == RepositoriesMode.PREFER_SETTINGS || repositoriesMode == RepositoriesMode.FAIL_ON_PROJECT_REPOS) {
+            log("【${project.name}】-> repoConfig -> repositoriesMode=$repositoriesMode".red)
+            return
+        }
+
         buildscript {
             try {
                 repositories.chinaRepos()

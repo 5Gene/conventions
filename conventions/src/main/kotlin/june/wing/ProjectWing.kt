@@ -253,3 +253,7 @@ fun Project.url(): Lazy<String> = lazy {
     debug("Remote URL: ${remoteUrl.removeSuffix(".git")}")
     remoteUrl
 }
+
+val isCI: Boolean by lazy {
+    System.getenv("CI") == "true" || System.getenv("GITHUB_ACTIONS") == "true" || System.getenv("JENKINS_HOME") != null
+}
