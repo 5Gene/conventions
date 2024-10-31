@@ -20,7 +20,6 @@ import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.repositories
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import kotlin.text.toInt
 
 interface Android {
@@ -205,7 +204,7 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
         // 作用：在使用支持 Kotlin 的集成开发环境（IDE）时，IDE 将根据 languageVersion 的设置提供代码提示、语法高亮和智能提示。这意味着 IDE 只会在代码补全时提供适合指定语言版本的特性，避免提示不支持的语法。
         // 示例：如果设置为 1.9，IDE 可能不会提示 2.0 中的新特性。
         // 例如，如果设置为 1.9，则可以使用 1.9 中的所有特性，但不能使用 2.0 中的新特性。
-        languageVersion.set(KotlinVersion.KOTLIN_2_2)
+        //languageVersion.set(KotlinVersion.KOTLIN_2_2)
         //总结：
         //languageVersion 主要影响语言特性的使用，决定了你可以使用哪些 Kotlin 语法和结构。
         //apiVersion 主要影响可用的标准库 API，确保代码兼容特定版本的库功能。
