@@ -22,7 +22,7 @@ dependencies {
     compileOnly("com.android.tools.build:gradle-api:${vcl.versions.android.gradle.plugin.get()}")
     //compileOnly("com.android.tools.build:gradle:${libs.versions.android.gradle.plugin.get()}")
     //gradle plugin id 规则 plugin_id:plugin_id.gradle.plugin:version
-    compileOnly("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:${vcl.versions.ksp.get()}")
+    compileOnly("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:${vcl.versions.google.ksp.get()}")
     compileOnly("androidx.room:androidx.room.gradle.plugin:${vcl.versions.androidx.room.get()}")
     compileOnly("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${vcl.versions.kotlin.get()}")
 //    https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
