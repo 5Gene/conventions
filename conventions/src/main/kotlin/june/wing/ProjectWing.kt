@@ -165,6 +165,7 @@ fun RepositoryHandler.chinaRepos() {
                 excludeGroupByRegex("osp.spark.*")
                 excludeGroupByRegex("osp.june.*")
                 excludeGroupByRegex("osp.gene.*")
+                excludeGroup("aar")
             }
         }
     }
