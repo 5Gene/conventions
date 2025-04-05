@@ -1,5 +1,6 @@
 import june.wing.log
 import june.wing.vlibs
+import kotlin.jvm.optionals.getOrDefault
 
 //https://docs.gradle.org/current/userguide/custom_plugins.html
 //预编译脚本插件
@@ -32,7 +33,7 @@ plugins {
 protobuf {
     protoc {
         // By default the plugin will search for the protoc executable in the system search path. We recommend you to take the advantage of pre-compiled protoc that we have published on Maven Central:
-        artifact = "com.google.protobuf:protoc:${vlibs.findVersion("protobuf").get()}"
+        artifact = "com.google.protobuf:protoc:${vlibs.findVersion("google-protobuf").getOrDefault("4.30.2")}"
     }
     generateProtoTasks {
         all().forEach { task ->

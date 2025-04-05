@@ -7,6 +7,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.findByType
+import kotlin.jvm.optionals.getOrDefault
 
 /**
  * 插件引入方式
@@ -27,7 +28,7 @@ class ProtobufPlugin : Plugin<Project> {
             val catalog = vlibs
             pbExtension?.apply {
                 protoc {
-                    artifact = "com.google.protobuf:protoc:${catalog.findVersion("protobuf").get()}"
+                    artifact = "com.google.protobuf:protoc:${catalog.findVersion("google-protobuf").getOrDefault("4.30.2")}"
                 }
                 generateProtoTasks {
                     all().forEach { task ->
