@@ -1,7 +1,7 @@
 #https://github.com/terrakok/kmp-awesome
 
 [versions]
-gene-conventions = "2.1.22"
+gene-conventions = "2.2"
 plugin-publish = "1.3.0"
 
 [libraries]

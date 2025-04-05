@@ -40,11 +40,13 @@ class AndroidComposePlugin : AndroidPlugin() {
         vlibs.findLibrary("androidx-compose-bom").ifPresent { bom ->
             add("implementation", platform(bom))
             add("implementation", vlibs.findBundle("compose").get())
+            add("androidTestImplementation", vlibs.findLibrary("androidx-compose-ui-test-manifest").get())
+            add("debugImplementation", vlibs.findLibrary("androidx-compose-ui-test-manifest").get())
+
             add("debugImplementation", vlibs.findLibrary("androidx-test-espresso-core").get())
-        }
-        vlibs.findLibrary("androidx-compose-ui-test-manifest").ifPresent { androidxCompose ->
-            add("androidTestImplementation", androidxCompose)
-            add("debugImplementation", androidxCompose)
+            add("debugImplementation", vlibs.findLibrary("androidx-compose-ui-tooling").get())
+            add("debugImplementation", vlibs.findLibrary("androidx-compose-ui-tooling-data").get())
+            add("debugImplementation", vlibs.findLibrary("androidx-compose-ui-tooling-preview").get())
         }
     }
 }
