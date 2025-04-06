@@ -32,6 +32,7 @@ import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import java.io.ByteArrayOutputStream
 import kotlin.io.path.isDirectory
@@ -253,6 +254,13 @@ fun Project.url(): Lazy<String> = lazy {
     val remoteUrl = stdout.toString().trim()
     debug("Remote URL: ${remoteUrl.removeSuffix(".git")}")
     remoteUrl
+}
+
+fun Project.kspNoCache() {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        //每次都执行ksp
+        outputs.upToDateWhen { false }
+    }
 }
 
 val isCI: Boolean by lazy {
