@@ -2,13 +2,14 @@ package june.plugins.android
 
 import androidx.room.gradle.RoomExtension
 import com.google.devtools.ksp.gradle.KspExtension
-import june.wing.*
 import june.wing.AndroidCommonExtension
 import june.wing.AndroidComponentsExtensions
 import june.wing.findVersionStr
 import june.wing.isAndroidApp
 import june.wing.isAndroidLibrary
 import june.wing.log
+import june.wing.property
+import june.wing.purple
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
@@ -20,7 +21,6 @@ import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.repositories
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
-import kotlin.text.toInt
 
 interface Android {
 
@@ -147,6 +147,7 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
         }
         //<editor-fold desc="android project default plugin">
         //如果根build.gradle没在plugins中apply的话这里无法依赖，之后补充自动依赖
+        //"kotlin-android" 是短名称/别名，更简洁；"org.jetbrains.kotlin.android" 是完整的官方插件 ID，更明确
         apply("kotlin-android")
         //apply("org.jetbrains.kotlin.android")
         apply("kotlin-parcelize")
