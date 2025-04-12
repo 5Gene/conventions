@@ -1,3 +1,5 @@
+import june.tasks.generateGradlePropTask
+
 plugins {
     //之所以要[apply true]是因为没在顶层build.gradle中apply所以这里需要
     alias(vcl.plugins.android.application) apply true
@@ -61,6 +63,23 @@ android {
                 "proguard-rules.pro"
             )
         }
+        create("staging") {
+            initWith(getByName("debug"))
+//            matchingFallbacks += listOf("debug")
+        }
+    }
+    flavorDimensions += "version"
+    productFlavors {
+        create("demo") {
+            dimension = "version"
+            applicationIdSuffix = ".demo"
+            versionNameSuffix = "-demo"
+        }
+        create("full") {
+            dimension = "version"
+            applicationIdSuffix = ".full"
+            versionNameSuffix = "-full"
+        }
     }
     buildFeatures {
         viewBinding = true
@@ -72,6 +91,8 @@ android {
         }
     }
 }
+
+generateGradlePropTask()
 
 dependencies {
     implementation(vcl.google.material)

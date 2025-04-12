@@ -1,3 +1,4 @@
+import june.tasks.generateGradlePropTask
 import june.wing.publish5hmlA
 
 plugins {
@@ -43,7 +44,16 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+//    sourceSets.getByName("main") {
+//        println(",,,,,,,,,,,,,")
+//        java {
+//            srcDir("build/generated/prop/main/kotlin")
+//        }
+//    }
 }
+
+generateGradlePropTask()
 
 dependencies {
     implementation(vcl.bundles.android.view)

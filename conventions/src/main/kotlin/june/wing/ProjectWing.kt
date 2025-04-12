@@ -120,10 +120,32 @@ fun Collection<*>.toStr(): String {
     return toTypedArray().contentToString()
 }
 
-fun AndroidCommonExtension.srcDirs(vararg srcDirs: Any) {
+
+fun Project.srcDirs(vararg setSrcDirs: Any) {
+    val projectName = name
+    androidExtension?.apply {
+        srcDirs(*setSrcDirs)
+    } ?: kotlinExtension?.apply {
+        sourceSets.getByName("main").kotlin {
+            println("🔔>project:$projectName $this add src dirs ${setSrcDirs.joinToString()} ")
+            srcDirs(*setSrcDirs)
+        }
+    } ?: javaExtension?.apply {
+        sourceSets.getByName("main").java {
+            println("🔔>project:$projectName $this add src dirs ${setSrcDirs.joinToString()} ")
+            srcDirs(*setSrcDirs)
+        }
+    }
+}
+
+fun AndroidCommonExtension.srcDirs(vararg setSrcDirs: Any) {
     sourceSets.getByName("main") {
+//            java {
+//                srcDirs(*srcDirs)
+//            }
         kotlin {
-            srcDirs(srcDirs)
+            println("🔔> android ${this.name} add src dirs ${setSrcDirs.joinToString()} ")
+            srcDirs(*setSrcDirs)
         }
     }
 }

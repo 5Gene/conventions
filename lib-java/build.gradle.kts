@@ -1,7 +1,7 @@
+import june.tasks.generateGradlePropTask
 import june.wing.logTasks
 import june.wing.publishGradlePluginSet
 import june.wing.showDependencies
-import org.gradle.kotlin.dsl.assign
 
 plugins {
     alias(vcl.plugins.kotlin.jvm)
@@ -19,6 +19,8 @@ sourceSets.main {
 group = "test.test"
 
 logTasks()
+
+generateGradlePropTask()
 
 //publish5hmlA("test", "kotlin", false)
 //publishJavaMavenCentral("lib-java-test")
