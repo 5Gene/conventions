@@ -1,10 +1,10 @@
 package june.plugins.android
 
-import june.wing.*
 import june.wing.AndroidCommonExtension
 import june.wing.AndroidComponentsExtensions
 import june.wing.chinaRepos
 import june.wing.log
+import june.wing.red
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.initialization.resolve.RepositoriesMode

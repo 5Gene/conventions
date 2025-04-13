@@ -4,7 +4,6 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph
-import kotlin.text.contains
 
 fun Project.disableLint() {
     modifyTask {

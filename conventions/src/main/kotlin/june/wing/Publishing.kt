@@ -9,7 +9,12 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.bundling.Zip
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.repositories
 import org.gradle.plugins.signing.SigningExtension
 import java.io.File
 import java.util.Locale
@@ -125,6 +130,10 @@ fun Project.publish5hmlA(
                 //    from(components.getByName("java"))
                 //}
 
+                //如果需要包含其他文件，比如 ProGuard 映射文件
+                // artifact("$buildDir/outputs/mapping/release/mapping.txt") {
+                //     classifier = "mapping"
+                // }
                 pom {
                     description = libDescription
                     url = gitUrl.removeSuffix(".git")

@@ -3,7 +3,8 @@ package june.wing
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugin.devel.PluginDeclaration
 

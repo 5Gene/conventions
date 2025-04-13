@@ -41,11 +41,18 @@ dependencies {
 group = "io.github.5hmlA"
 version = libs.versions.gene.conventions.get()
 
+//afterEvaluate {
+//    //不打包源码
+//    tasks.named<Jar>("sourcesJar") {
+//        exclude("**/*")
+//    }
+//}
+
 publishing {
     //MavenLocal本地地址默认为："${System.getProperty("user.home")}/.m2/repository"
     repositories {
         maven {
-            name = "JuneLocal"
+            name = "ZoyLocal"
             setUrl(".maven")
         }
     }
@@ -119,12 +126,6 @@ gradlePlugin {
     "插件下载地址: https://plugins.gradle.org/m2/".print()
 }
 
-afterEvaluate {
-    //不打包源码
-    tasks.named<Jar>("sourcesJar") {
-        exclude("**/*")
-    }
-}
 
 //插件推送之前 先去掉不符合规范的插件
 tasks.findByName("publishPlugins")?.doFirst {

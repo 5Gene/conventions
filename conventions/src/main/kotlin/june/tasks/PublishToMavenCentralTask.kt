@@ -9,7 +9,7 @@ import java.io.File
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Base64
 
 /**
  * - 继承**AbstractCopyTask**类可以接收上一个task产生的文件
