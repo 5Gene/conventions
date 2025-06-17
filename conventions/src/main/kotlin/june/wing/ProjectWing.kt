@@ -35,6 +35,9 @@ import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import java.io.ByteArrayOutputStream
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
 import kotlin.jvm.optionals.getOrNull
@@ -287,4 +290,11 @@ fun Project.kspNoCache() {
 
 val isCI: Boolean by lazy {
     System.getenv("CI") == "true" || System.getenv("GITHUB_ACTIONS") == "true" || System.getenv("JENKINS_HOME") != null
+}
+
+
+val beijingTimeVersion: String by lazy {
+    val beijingTime = LocalDateTime.now(ZoneId.of("Asia/Shanghai"))
+    val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+    beijingTime.format(formatter)
 }
