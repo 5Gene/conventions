@@ -48,7 +48,8 @@ fun beijingTimeVersion(): String {
 }
 
 group = "io.github.5hmlA"
-version = beijingTimeVersion()
+//version = beijingTimeVersion()
+version = "2025.08.05"
 
 //afterEvaluate {
 //    //不打包源码

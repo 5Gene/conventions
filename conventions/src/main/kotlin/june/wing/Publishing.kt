@@ -135,6 +135,7 @@ fun Project.publish5hmlA(
                 //     classifier = "mapping"
                 // }
                 pom {
+                    name = projectName
                     description = libDescription
                     url = gitUrl.removeSuffix(".git")
                     licenses {
