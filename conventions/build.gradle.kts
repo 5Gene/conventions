@@ -1,3 +1,6 @@
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 plugins {
     `kotlin-dsl`
@@ -8,7 +11,7 @@ plugins {
 //    `java-gradle-plugin`
 //    `maven-publish`
     //define『plugin portal -> publishPlugins』 task
-    id("com.gradle.plugin-publish") version "1.3.0"
+    id("com.gradle.plugin-publish") version libs.versions.plugin.publish.get()
 }
 
 repositories {
@@ -38,8 +41,14 @@ dependencies {
     // help->dependencies只会输出implementation的库的依赖关系
 }
 
+fun beijingTimeVersion(): String {
+    val beijingTime = LocalDateTime.now(ZoneId.of("Asia/Shanghai"))
+    val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+    return beijingTime.format(formatter)
+}
+
 group = "io.github.5hmlA"
-version = libs.versions.gene.conventions.get()
+version = beijingTimeVersion()
 
 //afterEvaluate {
 //    //不打包源码
