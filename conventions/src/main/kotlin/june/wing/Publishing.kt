@@ -147,7 +147,7 @@ fun Project.publish5hmlA(
                     developers {
                         developer {
                             id.set("5hmlA")
-                            name.set("ZuYun")
+                            name.set("祖赟")
                             email.set("jonsa.jzy@gmail.com")
                             url.set("https://github.com/5hmlA")
                         }
