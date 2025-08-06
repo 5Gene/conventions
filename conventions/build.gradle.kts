@@ -27,14 +27,14 @@ dependencies {
     //gradle plugin id 规则 plugin_id:plugin_id.gradle.plugin:version
     compileOnly("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:${vcl.versions.google.ksp.get()}")
     compileOnly("androidx.room:androidx.room.gradle.plugin:${vcl.versions.androidx.room.get()}")
-    compileOnly("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${vcl.versions.kotlin.get()}")
+    compileOnly("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${vcl.versions.kotlin.asProvider().get()}")
 //    https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 //    https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
 //    https://github.com/JetBrains/kotlin/
 //    kotlin("gradle-plugin", "1.9.24") == org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24
 
     compileOnly(libs.plugin.publish)
-    implementation(kotlin(module = "gradle-plugin", version = vcl.versions.kotlin.get()))
+    implementation(kotlin(module = "gradle-plugin", version = vcl.versions.kotlin.asProvider().get()))
     implementation("com.google.protobuf:protobuf-gradle-plugin:${vcl.versions.protobuf.plugin.get()}")
     testImplementation(vcl.test.junit)
 //    compileOnly(gradleKotlinDsl())
