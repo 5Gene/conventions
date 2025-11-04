@@ -4,11 +4,12 @@ import androidx.room.gradle.RoomExtension
 import com.google.devtools.ksp.gradle.KspExtension
 import june.wing.AndroidCommonExtension
 import june.wing.AndroidComponentsExtensions
+import june.wing.ConventionConfig
 import june.wing.findVersionStr
 import june.wing.isAndroidApp
 import june.wing.isAndroidLibrary
-import june.wing.log
-import june.wing.property
+import june.wing.logDebug
+import june.wing.logInfo
 import june.wing.purple
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -79,7 +80,7 @@ open class BaseAndroid(val android: Android? = null) : Android {
      * ```
      */
     override fun pluginConfigs(project: Project): PluginManager.(VersionCatalog) -> Unit = {
-        project.project.log("pluginConfigs()  ${this@BaseAndroid}".purple)
+        project.logDebug("pluginConfigs()  ${this@BaseAndroid}".purple)
         android?.pluginConfigs(project)?.invoke(this, it)
     }
 
@@ -95,7 +96,7 @@ open class BaseAndroid(val android: Android? = null) : Android {
      * ```
      */
     override fun androidExtensionConfig(project: Project): AndroidCommonExtension.(VersionCatalog) -> Unit = {
-        project.log("androidExtensionConfig()  ${this@BaseAndroid}".purple)
+        project.logDebug("androidExtensionConfig()  ${this@BaseAndroid}".purple)
         //有需要的话执行父类逻辑
         android?.androidExtensionConfig(project)?.invoke(this, it)
     }
@@ -103,12 +104,14 @@ open class BaseAndroid(val android: Android? = null) : Android {
 
     override fun androidComponentsExtensionConfig(project: Project): AndroidComponentsExtensions.(VersionCatalog) -> Unit =
         {
-            project.log("androidComponentsExtensionConfig()  ${this@BaseAndroid}".purple)
+            project.logDebug("androidComponentsExtensionConfig()  ${this@BaseAndroid}".purple)
             android?.androidComponentsExtensionConfig(project)?.invoke(this, it)
         }
 
     override fun kotlinOptionsConfig(project: Project): KotlinJvmCompilerOptions.() -> Unit = {
-        project.logger.log(LogLevel.DEBUG, "kotlinOptionsConfig()  ${this@BaseAndroid}".purple)
+        if (project.logger.isEnabled(LogLevel.DEBUG)) {
+            project.logger.log(LogLevel.DEBUG, "kotlinOptionsConfig()  ${this@BaseAndroid}".purple)
+        }
         android?.kotlinOptionsConfig(project)?.invoke(this)
     }
 
@@ -122,7 +125,7 @@ open class BaseAndroid(val android: Android? = null) : Android {
      * ```
      */
     override fun dependenciesConfig(project: Project): DependencyHandlerScope.(VersionCatalog) -> Unit = {
-        project.log("dependenciesConfig()  ${this@BaseAndroid}".purple)
+        project.logDebug("dependenciesConfig()  ${this@BaseAndroid}".purple)
         android?.dependenciesConfig(project)?.invoke(this, it)
     }
 }
@@ -172,10 +175,13 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
             // Up to Java 11 APIs are available through desugaring
             // https://developer.android.com/studio/write/java11-minimal-support-table
             //配置 config.project.java.version=17 对应 JavaVersion.VERSION_17
-            val version = project.property("config.project.java.version", 17).toInt()
-            val javaVersion = JavaVersion.values()[version - 1]
-            println("compileOptions -> javaVersion: ${javaVersion.name}")
-            //17 --> 16
+            val version = ConventionConfig.getJavaVersion(project)
+            val javaVersion = if (version > 0 && version <= JavaVersion.values().size) {
+                JavaVersion.values()[version - 1]
+            } else {
+                JavaVersion.values()[ConventionConfig.DEFAULT_JAVA_VERSION - 1]
+            }
+            project.logDebug("compileOptions -> javaVersion: ${javaVersion.name}")
             sourceCompatibility = javaVersion
             targetCompatibility = javaVersion
 
@@ -188,11 +194,15 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
     override fun kotlinOptionsConfig(project: Project): KotlinJvmCompilerOptions.() -> Unit = {
         super.kotlinOptionsConfig(project).invoke(this)
         //配置 config.project.java.version=17 对应 JVM_17
-        val javaVersion = project.property("config.project.java.version", 17).toInt()
-        //17 --> 9
-        //jvmTarget.set(JvmTarget.JVM_17)
-        val jvmTargetVersion = JvmTarget.values()[javaVersion - 8]
-//        println("KotlinJvmCompilerOptions -> javaVersion: ${jvmTargetVersion.name}")
+        val javaVersion = ConventionConfig.getJavaVersion(project)
+        //17 --> 9 (JVM_17 的索引)
+        val jvmTargetIndex = javaVersion - 8
+        val jvmTargetVersion = if (jvmTargetIndex >= 0 && jvmTargetIndex < JvmTarget.values().size) {
+            JvmTarget.values()[jvmTargetIndex]
+        } else {
+            JvmTarget.values()[ConventionConfig.DEFAULT_JAVA_VERSION - 8]
+        }
+        project.logDebug("KotlinJvmCompilerOptions -> javaVersion: ${jvmTargetVersion.name}")
         jvmTarget.set(jvmTargetVersion)
 
         //apiVersion
@@ -227,12 +237,12 @@ class AndroidBase(pre: Android? = null) : BaseAndroid(pre) {
                 add("androidTestImplementation", androidxBenchmark)
             }
             catalog.findBundle("android-basic").ifPresent({ androidBasic ->
-                project.project.log("implementation(android-basic)")
+                project.logDebug("implementation(android-basic)")
                 add("implementation", androidBasic)
             })
         } else if (project.isAndroidLibrary) {
             catalog.findBundle("android-basic").ifPresent({ androidBasic ->
-                project.project.log("implementation(android-basic)")
+                project.logDebug("implementation(android-basic)")
                 add("implementation", androidBasic)
             })
         }

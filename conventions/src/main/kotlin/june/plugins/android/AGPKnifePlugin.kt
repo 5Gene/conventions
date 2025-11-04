@@ -11,7 +11,7 @@ import june.knife.asm.KnifeAsmClassVisitorFactory
 import june.knife.asm.toModifyConfig
 import june.wing.AndroidComponentsExtensions
 import june.wing.isAndroidApplication
-import june.wing.log
+import june.wing.logDebug
 import june.wing.red
 import june.wing.toStr
 import org.gradle.api.Project
@@ -29,7 +29,7 @@ class AGPKnifePlugin : AbsAndroidPlugin() {
             val variantKnifeActionImpl = VariantKnifeActionImpl()
             variantKnifeActionImpl.createExtension(knifeExtension)
 
-            project.log("knife > knifeExtension:${knifeImpl.onVariants}")
+            project.logDebug("knife > knifeExtension:${knifeImpl.onVariants}")
 
             /**
              * plugin中的onVariants{}会优先执行 ,所以app中建议用 beforeVariants{}遍历和配置
@@ -38,7 +38,7 @@ class AGPKnifePlugin : AbsAndroidPlugin() {
                 knifeImpl.onVariants?.let {
                     it.invoke(variant)//variant回调到build.gradle
                     //build.gradle中通过utility{}注册asmTransform到variantAction
-                    project.log("knife > onVariant:${variant.name}")
+                    project.logDebug("knife > onVariant:${variant.name}")
                     //存在listenArtifact的时候才创建task
                     tryListenArtifact(variantKnifeActionImpl, project, variant)
                     //transform
@@ -52,7 +52,7 @@ class AGPKnifePlugin : AbsAndroidPlugin() {
         project: Project,
         variant: Variant
     ) {
-        project.log("knife > tryAsmTransform:${variant.name}  ${variantAction.transformConfigs}")
+        project.logDebug("knife > tryAsmTransform:${variant.name}  ${variantAction.transformConfigs}")
         variantAction.transformConfigs?.let { asmTransform ->
 
             val transformConfigs = TransformConfigImpl()
@@ -60,7 +60,7 @@ class AGPKnifePlugin : AbsAndroidPlugin() {
             asmTransform(transformConfigs)
 
             if (transformConfigs.modifyConfigs.isEmpty()) {
-                project.log("knife > tryAsmTransform:${variant.name} no transformConfigs skip >>".red)
+                project.logDebug("knife > tryAsmTransform:${variant.name} no transformConfigs skip >>".red)
                 return
             }
 
@@ -86,7 +86,7 @@ class AGPKnifePlugin : AbsAndroidPlugin() {
                 //)
             }
 
-            project.log("knife > tryAsmTransform:${variant.name}  ${transformConfigs.modifyConfigs.toStr()}".red)
+            project.logDebug("knife > tryAsmTransform:${variant.name}  ${transformConfigs.modifyConfigs.toStr()}".red)
             val modifyConfigs = transformConfigs.modifyConfigs.map {
                 it.toModifyConfig()
             }
@@ -102,11 +102,11 @@ class AGPKnifePlugin : AbsAndroidPlugin() {
                     it.value.groupBy { it.targetMethod.methodName }
                 }
                 mapValues.forEach { (key, value) ->
-                    project.log("knife > tryAsmTransform:${variant.name} 👇👇👇👇👇👇👇👇👇👇 $key 👇👇👇👇👇👇👇👇👇👇".red)
+                    project.logDebug("knife > tryAsmTransform:${variant.name} 👇👇👇👇👇👇👇👇👇👇 $key 👇👇👇👇👇👇👇👇👇👇".red)
                     value.forEach { (t, u) ->
-                        project.log("knife > tryAsmTransform:${variant.name}       $t > ${u.map { it.methodAction }}".red)
+                        project.logDebug("knife > tryAsmTransform:${variant.name}       $t > ${u.map { it.methodAction }}".red)
                     }
-                    project.log("knife > tryAsmTransform:${variant.name} 👆👆👆👆👆👆👆👆👆👆 $key 👆👆👆👆👆👆👆👆👆👆 ".red)
+                    project.logDebug("knife > tryAsmTransform:${variant.name} 👆👆👆👆👆👆👆👆👆👆 $key 👆👆👆👆👆👆👆👆👆👆 ".red)
                 }
                 params.classConfigs.set(mapValues)
                 val modifyClasses = modifyConfigs.map { it.targetMethod.fullClass }.toSet()
@@ -120,7 +120,7 @@ class AGPKnifePlugin : AbsAndroidPlugin() {
         project: Project,
         variant: Variant
     ) {
-        project.log("knife > tryListenArtifact:${variant.name}")
+        project.logDebug("knife > tryListenArtifact:${variant.name}")
         variantAction.listenArtifact?.let {
             val taskProvider =
                 project.tasks.register<TaskListenApk>("listenApkFor${variant.name}") {

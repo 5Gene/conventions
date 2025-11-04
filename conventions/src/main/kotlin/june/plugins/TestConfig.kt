@@ -6,7 +6,8 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import june.wing.androidExtension
 import june.wing.androidExtensionComponent
-import june.wing.log
+import june.wing.logDebug
+import june.wing.logInfo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
@@ -28,10 +29,10 @@ class TestConfig : Plugin<Project> {
 //        }
 
         with(target) {
-            log("=========================== START【${this@TestConfig}】 =========================")
+            logDebug("=========================== START【${this@TestConfig}】 =========================")
 
-            log("常见构建自定义的即用配方，展示如何使用Android Gradle插件的公共API和DSL:")
-            log("https://github.com/android/gradle-recipes")
+            logInfo("常见构建自定义的即用配方，展示如何使用Android Gradle插件的公共API和DSL:")
+            logInfo("https://github.com/android/gradle-recipes")
 
             val projectName = name
 //            ApplicationAndroidComponentsExtension -> ApplicationExtension
@@ -49,13 +50,13 @@ class TestConfig : Plugin<Project> {
 //                    println("variant.buildConfigFields = ${variant.buildConfigFields.keySet().get().toStr()}")
 //                    println("variant.applicationId = ${variant.applicationId.get()}")
                     println("variant.name = ${variant.name}")
-                    log("------variant class--------------${variant.javaClass}")
+                    logDebug("------variant class--------------${variant.javaClass}")
 //                    if (it is ApplicationVariantImpl) {
 //                        log("---------ApplicationVariantImpl--------- ${it.name}")
 //                    }
                 }
             }
-            log("=========================== END【${this@TestConfig}】 =========================")
+            logDebug("=========================== END【${this@TestConfig}】 =========================")
         }
     }
 }

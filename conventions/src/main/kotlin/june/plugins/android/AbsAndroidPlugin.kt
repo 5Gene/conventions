@@ -4,7 +4,8 @@ import com.android.build.gradle.BasePlugin
 import june.wing.AndroidCommonExtension
 import june.wing.AndroidComponentsExtensions
 import june.wing.androidExtensionComponent
-import june.wing.log
+import june.wing.logDebug
+import june.wing.logInfo
 import june.wing.vlibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -85,11 +86,17 @@ open class AbsAndroidPlugin : Plugin<Project> {
         target.plugins.withType(BasePlugin::class.java) {
             //application or library
             with(target) {
-                log("=========================== START【${this@AbsAndroidPlugin}】 =========================")
-                log("常见构建自定义的即用配方，展示如何使用Android Gradle插件的公共API和DSL:")
-                log("https://github.com/android/gradle-recipes")
+                logDebug("=========================== START【${this@AbsAndroidPlugin}】 =========================")
+                logInfo("常见构建自定义的即用配方，展示如何使用Android Gradle插件的公共API和DSL:")
+                logInfo("https://github.com/android/gradle-recipes")
                 onProject(target)
+                
                 val catalog = vlibs
+                if (catalog == null) {
+                    logger.warn("Version catalog 'vcl' not found. Plugin configuration may be incomplete.")
+                    return@with
+                }
+                
                 with(pluginManager) {
                     pluginConfigs(target)(catalog)
                 }
@@ -118,7 +125,7 @@ open class AbsAndroidPlugin : Plugin<Project> {
                 dependencies {
                     dependenciesConfig(target)(catalog)
                 }
-                log("=========================== END【${this@AbsAndroidPlugin}】 =========================")
+                logDebug("=========================== END【${this@AbsAndroidPlugin}】 =========================")
                 //生成apk地址
                 //https://github.com/android/gradle-recipes/blob/agp-8.4/allProjectsApkAction/README.md
                 //com.android.build.gradle.internal.variant.VariantPathHelper.getApkLocation

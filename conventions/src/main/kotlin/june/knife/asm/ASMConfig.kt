@@ -180,16 +180,34 @@ private fun String.toMethodAction(): Action {
     return Action.EmptyBody
 }
 
-internal fun String.toModifyConfig(): ModifyConfig {
-    // "target.class#method#(I)V=>PrintStream#println#(I)V->dest/clazz"
-    if (!contains("=>")) {
-        return ModifyConfig(toMethodData(), Action.EmptyBody)
-    }
-    val (targetMethodStr, methodActionStr) = split("=>")
-    val targetMethod = targetMethodStr.toMethodData()
+/**
+ * 配置解析缓存，避免重复解析相同的配置字符串
+ * 在大型项目中，相同的配置可能被多次解析，缓存可以显著提升性能
+ */
+private val configCache = mutableMapOf<String, ModifyConfig>()
 
-    if (methodActionStr.isEmpty()) {
-        return ModifyConfig(targetMethod, Action.EmptyBody)
+internal fun String.toModifyConfig(): ModifyConfig {
+    // 使用缓存避免重复解析
+    return configCache.getOrPut(this) {
+        // "target.class#method#(I)V=>PrintStream#println#(I)V->dest/clazz"
+        if (!contains("=>")) {
+            ModifyConfig(toMethodData(), Action.EmptyBody)
+        } else {
+            val (targetMethodStr, methodActionStr) = split("=>")
+            val targetMethod = targetMethodStr.toMethodData()
+
+            if (methodActionStr.isEmpty()) {
+                ModifyConfig(targetMethod, Action.EmptyBody)
+            } else {
+                ModifyConfig(targetMethod, methodActionStr.toMethodAction())
+            }
+        }
     }
-    return ModifyConfig(targetMethod, methodActionStr.toMethodAction())
+}
+
+/**
+ * 清空配置缓存（主要用于测试）
+ */
+internal fun clearConfigCache() {
+    configCache.clear()
 }

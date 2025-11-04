@@ -2,8 +2,10 @@ package june.plugins.android
 
 import june.wing.AndroidCommonExtension
 import june.wing.AndroidComponentsExtensions
+import june.wing.ConventionConfig
 import june.wing.chinaRepos
-import june.wing.log
+import june.wing.logDebug
+import june.wing.logInfo
 import june.wing.red
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
@@ -22,7 +24,7 @@ open class AndroidPlugin : AbsAndroidPlugin() {
 
     override fun onProject(project: Project) {
         androidConfig = AndroidBase()
-        if (project.findProperty("config.android.room") == "true") {
+        if (ConventionConfig.isRoomEnabled(project)) {
             androidConfig = AndroidRoom(androidConfig)
         }
         project.buildCacheDir()
@@ -51,16 +53,15 @@ open class AndroidPlugin : AbsAndroidPlugin() {
     }
 
     private fun Project.buildCacheDir() {
-        log("========= Project.layout[buildDir] ${layout.buildDirectory.javaClass} ${layout.buildDirectory.asFile.get().absolutePath}")
-        log("👉 set『build.cache.root.dir=D』can change build cache dir to D:/0buildCache/")
-        //log("========= Project.buildDir ${buildDir} =========================")
-        val buildDir = properties["build.cache.root.dir"] ?: System.getenv("build.cache.root.dir")
+        logDebug("========= Project.layout[buildDir] ${layout.buildDirectory.javaClass} ${layout.buildDirectory.asFile.get().absolutePath}")
+        logDebug("👉 set『${ConventionConfig.PROP_BUILD_CACHE_DIR}=D』can change build cache dir to D:/0buildCache/")
+        val buildDir = ConventionConfig.getBuildCacheRootDir(this)
         buildDir?.let {
             //https://github.com/gradle/gradle/issues/20210
             //https://docs.gradle.org/current/userguide/upgrading_version_8.html#deprecations
-            layout.buildDirectory.set(File("$it:/0buildCache/${rootProject.name}/${project.name}"))
-            log("👉『${project.name}』buildDir is relocated to -> ${project.layout.buildDirectory.asFile.get()} 🥱")
-            //buildDir = File("E:/0buildCache/${rootProject.name}/${project.name}")
+            val cachePath = "$it${ConventionConfig.DEFAULT_BUILD_CACHE_PATH}${rootProject.name}/${project.name}"
+            layout.buildDirectory.set(File(cachePath))
+            logInfo("👉『${project.name}』buildDir is relocated to -> ${project.layout.buildDirectory.asFile.get()} 🥱")
         }
     }
 
@@ -70,7 +71,7 @@ open class AndroidPlugin : AbsAndroidPlugin() {
         }
         val repositoriesMode = project.gradle.extra["repositoriesMode"]
         if (repositoriesMode == RepositoriesMode.PREFER_SETTINGS || repositoriesMode == RepositoriesMode.FAIL_ON_PROJECT_REPOS) {
-            log("【${project.name}】-> repoConfig -> repositoriesMode=$repositoriesMode".red)
+            logInfo("【${project.name}】-> repoConfig -> repositoriesMode=$repositoriesMode".red)
             return
         }
 
@@ -78,29 +79,30 @@ open class AndroidPlugin : AbsAndroidPlugin() {
             try {
                 repositories.chinaRepos()
             } catch (e: Exception) {
-                e.printStackTrace()
+                logger.warn("Failed to configure buildscript repositories", e)
             }
             repositories.forEach {
-                log("> Project.buildscript repositories ${it.name} >  =========================")
+                logDebug("> Project.buildscript repositories ${it.name} >  =========================")
             }
         }
 
         try {
             repositories.chinaRepos()
         } catch (e: Exception) {
-            log(
+            logger.warn(
                 """
-                        ${e.message}\n
-                        报错原因是 repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS) 导致的
-                        修改为如下设置:
-                            dependencyResolutionManagement {
-                                repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
-                            }
-                        """.trimIndent().red
+                    ${e.message}
+                    报错原因是 repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS) 导致的
+                    修改为如下设置:
+                        dependencyResolutionManagement {
+                            repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
+                        }
+                """.trimIndent().red,
+                e
             )
         }
         repositories.forEach {
-            log("🔔> Project.repositories ${it.name} > ${(it as DefaultMavenArtifactRepository).url} =========================")
+            logDebug("🔔> Project.repositories ${it.name} > ${(it as DefaultMavenArtifactRepository).url} =========================")
         }
     }
 }

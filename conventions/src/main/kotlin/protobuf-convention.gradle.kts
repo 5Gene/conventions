@@ -1,4 +1,5 @@
-import june.wing.log
+import june.wing.logDebug
+import june.wing.logInfo
 import june.wing.vlibs
 import kotlin.jvm.optionals.getOrDefault
 
@@ -24,16 +25,21 @@ import kotlin.jvm.optionals.getOrDefault
 //    id("io.github.5hmlA.protobuf-convention")
 //}
 
-log("=========================== START【${this}】 =========================")
+logDebug("=========================== START【${this}】 =========================")
 
 plugins {
     id("com.google.protobuf")
 }
 
+val catalog = vlibs
+if (catalog == null) {
+    logger.warn("Version catalog 'vcl' not found. Protobuf convention plugin configuration may be incomplete.")
+}
+
 protobuf {
     protoc {
         // By default the plugin will search for the protoc executable in the system search path. We recommend you to take the advantage of pre-compiled protoc that we have published on Maven Central:
-        artifact = "com.google.protobuf:protoc:${vlibs.findVersion("google-protobuf").getOrDefault("4.30.2")}"
+        artifact = "com.google.protobuf:protoc:${catalog?.findVersion("google-protobuf")?.getOrDefault("4.30.2") ?: "4.30.2"}"
     }
     generateProtoTasks {
         all().forEach { task ->
@@ -49,18 +55,19 @@ protobuf {
     }
 }
 
-println("protobuf文档: https://protobuf.dev/")
-println("最佳实践: https://protobuf.dev/programming-guides/api/")
-println("   - 不要重复使用标签号码 ")
-println("   - 为已删除的字段保留标签号")
-println("   - 为已删除的枚举值保留编号")
-println("   - 不要更改字段的类型 ")
-println("   - 不要发送包含很多字段的消息 ")
-println("   - 不要更改字段的默认值 ")
-println("   - 不要更改字段的默认值 ")
+logInfo("protobuf文档: https://protobuf.dev/")
+logInfo("最佳实践: https://protobuf.dev/programming-guides/api/")
+logInfo("   - 不要重复使用标签号码")
+logInfo("   - 为已删除的字段保留标签号")
+logInfo("   - 为已删除的枚举值保留编号")
+logInfo("   - 不要更改字段的类型")
+logInfo("   - 不要发送包含很多字段的消息")
+logInfo("   - 不要更改字段的默认值")
 
 dependencies {
-    add("implementation", vlibs.findLibrary("protobuf-kotlin").get())
+    catalog?.findLibrary("protobuf-kotlin")?.ifPresent {
+        add("implementation", it)
+    } ?: logger.warn("protobuf-kotlin library not found in version catalog, skipping dependency")
 //    implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
 }
-log("=========================== END【${this}】 =========================")
+logDebug("=========================== END【${this}】 =========================")
