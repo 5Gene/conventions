@@ -271,14 +271,18 @@ fun VersionCatalog?.findVersionStr(alias: String) = this?.findVersion(alias)?.ge
 fun VersionCatalog.getVersion(alias: String) = findVersion(alias).get().requiredVersion
 
 fun Project.url(): Lazy<String> = lazy {
-    val stdout = ByteArrayOutputStream()
-    exec {
-        commandLine("git", "config", "--get", "remote.origin.url")
-        standardOutput = stdout
+    try {
+        val stdout = ByteArrayOutputStream()
+        exec {
+            commandLine("git", "config", "--get", "remote.origin.url")
+            standardOutput = stdout
+        }
+        val remoteUrl = stdout.toString().trim()
+        debug("Remote URL: ${remoteUrl.removeSuffix(".git")}")
+        remoteUrl
+    } catch (e: Exception) {
+        "https://github.com/5Gene/conventions"
     }
-    val remoteUrl = stdout.toString().trim()
-    debug("Remote URL: ${remoteUrl.removeSuffix(".git")}")
-    remoteUrl
 }
 
 fun Project.kspNoCache() {

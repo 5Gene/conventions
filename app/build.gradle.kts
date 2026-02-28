@@ -16,7 +16,7 @@ plugins {
 
 knife {
     onVariants { variants ->
-        if (variants.name.contains("debug")) {
+        if (variants.name.contains("debug", true)) {
             utility {
                 asmTransform {
                     configs(

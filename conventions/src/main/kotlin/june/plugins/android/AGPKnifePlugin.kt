@@ -120,7 +120,7 @@ class AGPKnifePlugin : AbsAndroidPlugin() {
         project: Project,
         variant: Variant
     ) {
-        project.log("knife > tryListenArtifact:${variant.name}")
+        project.log("knife > tryListenArtifact:${variant.name}, listenArtifact:${variantAction.listenArtifact}")
         variantAction.listenArtifact?.let {
             val taskProvider =
                 project.tasks.register<TaskListenApk>("listenApkFor${variant.name}") {

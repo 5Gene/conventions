@@ -13,8 +13,8 @@ plugins {
 knife {
     println("--knife ->------- build config")
     onVariants {
-        println("--knife ->------- build config $it")
-        if (it.name.contains("debug")) {
+        println("--knife ->------- build config ${it.name}")
+        if (it.name.contains("debug", true)) {
             utility {
                 onArtifactBuilt {
                     copy {
