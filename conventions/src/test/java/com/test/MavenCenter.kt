@@ -1,5 +1,6 @@
 import com.test.Http
 import com.test.Http.asAuthorizationHeader
+import com.test.Http.request
 import java.io.File
 import java.util.Base64
 
@@ -24,7 +25,7 @@ fun getStatus(deploymentId: String = defDeploymentId) {
 
 fun drop(deploymentId: String = defDeploymentId) {
     val delUrl = "https://central.sonatype.com/api/v1/publisher/deployment/$deploymentId"
-    val statusResult = request(Request(url = delUrl, method = "DELETE").addHeaders(authorization.asAuthorizationHeader()))
+    val statusResult = request(Http.Request(url = delUrl, method = "DELETE").addHeaders(authorization.asAuthorizationHeader()))
 //    Http.apply {
 //        val statusResult = Http.request(Http.Request(url = delUrl, method = "DELETE").addHeaders(authorization.asAuthorizationHeader()))
 //        println(statusResult)
@@ -34,7 +35,6 @@ fun drop(deploymentId: String = defDeploymentId) {
 fun upload(file: File) {
     val autoService = "AutoService-1.1.2.${System.currentTimeMillis()}"
     val uploadUrl = "https://central.sonatype.com/api/v1/publisher/upload?name=$autoService&publishingType=USER_MANAGED"
-    multipart(uploadUrl, authorization.asAuthorizationHeader(), file = file.asMultipart("bundle"))
 //    Http.apply {
 //        val uploadResult = Http.request(
 //            Http.Request(uploadUrl).addHeaders(authorization.asAuthorizationHeader())
